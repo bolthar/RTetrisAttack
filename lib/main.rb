@@ -65,16 +65,16 @@ while true
     exit if event.sym == SDL::Key::Q
     pos_x += 1 if event.sym == SDL::Key::RIGHT
     pos_x -= 1 if event.sym == SDL::Key::LEFT
-    pos_y -= 1 if event.sym == SDL::Key::UP
-    pos_y += 1 if event.sym == SDL::Key::DOWN
+    pos_y += 1 if event.sym == SDL::Key::UP
+    pos_y -= 1 if event.sym == SDL::Key::DOWN
     playfield.swap(pos_x, pos_y) if event.sym == SDL::Key::N
     Surface.blit(area, 0, 0, 0, 0, screen, start_x, start_y)
     (0...playfield.blocks.length).each do |n|
        (0...playfield.blocks[n].length).each do |m|
-         Surface.blit(tokens[playfield.blocks[n][m].type],0,0,0,0 ,screen,start_x + (n*16), start_y + (m*16))
+         Surface.blit(tokens[playfield.blocks[n][m].type],0,0,0,0 ,screen,start_x + (n*16), end_y - (m*16))
        end
     end
-    Surface.blit(cursor, 0 ,0, 0, 0, screen,start_x + (16 * pos_x) - 2, start_y + (16 * pos_y) - 2)
+    Surface.blit(cursor, 0 ,0, 0, 0, screen,start_x + (16 * pos_x) - 2, end_y - (16 * pos_y) - 2)
     screen.update_rect(start_x, start_y, end_x - start_x, end_y - start_y)
     p "#{playfield.blocks[0].length}, #{playfield.blocks[1].length}, #{playfield.blocks[2].length}, #{playfield.blocks[3].length},#{playfield.blocks[4].length}, #{playfield.blocks[5].length}"
   end
