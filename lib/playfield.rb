@@ -16,7 +16,7 @@ class SwapCache
     @ticks = 4
     Thread.new do
       while @ticks != 0
-        sleep(0.02)
+        sleep(0.02)        
         @ticks -= 1
         ask_for_render.call(self)
       end
@@ -109,6 +109,7 @@ class Playfield
       end
       matches = find_matches
     end
+#    @renderer.render(self)
   end
 
   def find_matches
