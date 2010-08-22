@@ -56,15 +56,31 @@ class Playfield
   def find_matches
     matches = []
     (0...@blocks.length).each do |stack|
-      (0...@blocks[stack].length).each do |block|
-        horizontal_matches = search_x(stack, block, -1) + search_x(stack, block, 1)
-        vertical_matches   = search_y(stack, block, -1) + search_y(stack, block, 1)
+      (1...@blocks[stack].length).each do |block|
+        horizontal_matches = search_x(stack, block, -1) | search_x(stack, block, 1)
+        vertical_matches   = search_y(stack, block, -1) | search_y(stack, block, 1)
         match = []
-        match = match + horizontal_matches.uniq if horizontal_matches.uniq.length > 2
-        match = match + vertical_matches.uniq if vertical_matches.uniq.length > 2
-        matches << match.uniq if match.any?
+        match = match | horizontal_matches if horizontal_matches.length > 2
+        match = match | vertical_matches if vertical_matches.length > 2
+        matches << match if match.any?
       end
-    end    
+    end
+    return matches if matches.length < 2
+    combined_matches = []
+    while combined_matches.length != matches.length
+      matches.combination(2).each do |pair|
+        merge_matches(pair[0], pair[1]).each do |match|
+          combined_matches << match
+        end
+        matches = combined_matches
+      end
+    end
+    return matches
+  end
+
+  def merge_matches(match, other_match)
+    return [match | other_match] if match.any? { |block| other_match.include?(block) }
+    return [match, other_match]
   end
 
   def search_x(x, y, verse, results = [])
@@ -75,7 +91,7 @@ class Playfield
   end
 
   def search_y(x, y, verse, results = [])
-    return results if x >= @blocks.length || !@blocks[x][y+verse]
+    return results if x >= @blocks.length || !@blocks[x][y+verse] || y == 0
     results << @blocks[x][y]
     return search_y(x, y + verse, verse, results) if @blocks[x][y+verse].type == @blocks[x][y].type
     return results

@@ -27,14 +27,14 @@ class Cursor
   end
 
   def pos_y=(value)
-    if value > -1 && value < 11
+    if value > 0 && value < 12
       @pos_y = value
     end
   end
 
   def initialize
     @pos_x = 0
-    @pos_y = 0
+    @pos_y = 1
   end
 
   def load(filename)
@@ -118,7 +118,7 @@ class Renderer
        Surface.blit(get_tokens(m)[@playfield.blocks[n][m].type],0,0,0,0 ,@screen,@start_x + (n*16), @end_y - (m*16) - @playfield.ticks)
       end
     end
-    Surface.blit(@playfield.cursor.sprite, 0 ,0, 0, 0, @screen, @start_x + (16 * @playfield.cursor.pos_x) - 2, @end_y - (16 * @playfield.cursor.pos_y) - 2 - 16 - @playfield.ticks)
+    Surface.blit(@playfield.cursor.sprite, 0 ,0, 0, 0, @screen, @start_x + (16 * @playfield.cursor.pos_x) - 2, @end_y - (16 * @playfield.cursor.pos_y) - 2 - @playfield.ticks)
     @screen.update_rect(@start_x, @start_y, @end_x - @start_x, @end_y - @start_y)
   end
 
