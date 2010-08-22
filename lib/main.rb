@@ -69,11 +69,40 @@ class Renderer
     return @tokens
   end
 
+  def dark_tokens
+    return @dark_tokens if @dark_tokens
+    dark_green = darken_surface(tokens[0])
+    dark_blue = darken_surface(tokens[1])
+    dark_violet = darken_surface(tokens[2])
+    dark_yellow = darken_surface(tokens[3])
+    dark_red = darken_surface(tokens[4])
+    @dark_tokens = {0 => dark_green, 1 => dark_blue, 2 => dark_violet, 3 => dark_yellow, 4 => dark_red}
+    return @dark_tokens
+  end
+
+  def darken_surface(surface)
+    darkened_surface = surface.copy_rect(0,0,surface.w,surface.h)
+    (0...darkened_surface.w).each do |x|
+      (0...darkened_surface.h).each do |y|
+        darkened_surface[x,y] = [darkened_surface.get_rgba(darkened_surface[x,y])[0] * 0.5,
+                           darkened_surface.get_rgba(darkened_surface[x,y])[1] * 0.5,
+                           darkened_surface.get_rgba(darkened_surface[x,y])[2] * 0.5,
+                           darkened_surface.get_rgba(darkened_surface[x,y])[3]]
+      end
+    end
+    return darkened_surface
+  end
+
+  def get_tokens(row)
+    return dark_tokens if row == 0
+    return tokens
+  end
+
   def render
     Surface.blit(area, 0, 0, 0, 0, @screen, @start_x, @start_y)
     (0...@playfield.blocks.length).each do |n|
-     (1...@playfield.blocks[n].length).each do |m|
-       Surface.blit(tokens[@playfield.blocks[n][m].type],0,0,0,0 ,@screen,@start_x + (n*16), @end_y - (m*16) + 16 - @playfield.ticks)
+     (0...@playfield.blocks[n].length).each do |m|
+       Surface.blit(get_tokens(m)[@playfield.blocks[n][m].type],0,0,0,0 ,@screen,@start_x + (n*16), @end_y - (m*16) - @playfield.ticks)
       end
     end
     Surface.blit(@playfield.cursor.sprite, 0 ,0, 0, 0, @screen, @start_x + (16 * @playfield.cursor.pos_x) - 2, @end_y - (16 * @playfield.cursor.pos_y) - 2 - 16 - @playfield.ticks)
@@ -89,12 +118,6 @@ screen = Screen.open(256, 222, 0, HWSURFACE | DOUBLEBUF)
 
 intro = load_music('intro')
 theme = load_music('music')
-
-green = load('green')
-blue = load('blue')
-violet = load('violet')
-yellow = load('yellow')
-red = load('red')
 
 cursor = Cursor.new
 
@@ -123,7 +146,7 @@ screen.flip
 renderer = Renderer.new(playfield, screen, cursor, [start_x, end_x, start_y, end_y])
 Thread.new do
   while true
-    sleep(0.1)
+    sleep(0.4)
     playfield.tick
     renderer.render
   end
