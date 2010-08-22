@@ -2,13 +2,46 @@
 
 require File.dirname(__FILE__) + "/stack.rb"
 
+class SwapCache
+
+  attr_reader :ticks
+
+  def blocks
+    return [@block_data_one[0], @block_data_two[0]]
+  end
+
+  def initialize(block_data_one, block_data_two, ask_for_render)
+    @block_data_one = block_data_one
+    @block_data_two = block_data_two
+    @ticks = 4
+    Thread.new do
+      while @ticks != 0
+        sleep(0.02)
+        @ticks -= 1
+        ask_for_render.call(self)
+      end
+      yield(@block_data_one, @block_data_two)
+    end
+  end
+
+  def y
+    return @block_data_one[2]
+  end
+
+  def x
+    return @block_data_one[1]
+  end
+
+end
+
 class Playfield
 
   attr_reader :blocks
   attr_reader :ticks
   attr_reader :cursor
+  attr_reader :swapcaches
   
-  def initialize(cursor)
+  def initialize(cursor, renderer)
     @blocks = []
     (0...6).each do |n|
       @blocks[n] = Stack.new
@@ -18,6 +51,8 @@ class Playfield
     end
     @ticks = 0
     @cursor = cursor
+    @swapcaches = []
+    @renderer = renderer
   end
 
   def tick
@@ -27,11 +62,31 @@ class Playfield
       @cursor.pos_y += 1
       @ticks = 0
     end
+    @renderer.render(self)
   end
 
+  def in_cache?(block)
+    @swapcaches.each do |cache|
+      return true if cache.blocks.include?(block)
+    end
+    return false
+  end
+
+  def ask_for_render(swapcache)
+    block_one = swapcache.blocks[0]
+    block_two = swapcache.blocks[1]
+    @renderer.render_swap(block_one, block_two, swapcache.x, swapcache.y, @ticks, swapcache.ticks)
+  end
+  
   def swap(x, y)
     if @blocks[x][y] && @blocks[x+1][y]
-      @blocks[x][y], @blocks[x+1][y] = @blocks[x+1][y], @blocks[x][y]
+      cache = SwapCache.new([@blocks[x][y],x,y],[@blocks[x+1][y],x+1,y], method(:ask_for_render)) do |bd1, bd2|
+        @blocks[x][y] = bd2[0]
+        @blocks[x+1][y] = bd1[0]
+        check_for_matches
+        @swapcaches.delete(cache)
+      end
+      @swapcaches << cache
     else
       if @blocks[x][y]
         @blocks[x+1].push(@blocks[x][y])
@@ -41,6 +96,9 @@ class Playfield
         @blocks[x+1].delete(@blocks[x+1][y])
       end
     end
+  end
+
+  def check_for_matches
     matches = find_matches
     while matches.any?
       matches = find_matches

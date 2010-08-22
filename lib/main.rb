@@ -51,12 +51,11 @@ end
 
 class Renderer
 
-  def initialize(playfield, screen, cursor, starting_coordinates)
+  def initialize(screen, cursor, starting_coordinates)
     @start_x = starting_coordinates[0]
     @end_x = starting_coordinates[1]
     @start_y = starting_coordinates[2]
     @end_y = starting_coordinates[3]
-    @playfield = playfield
     @screen = screen
     @cursor = cursor
   end
@@ -111,15 +110,22 @@ class Renderer
     return tokens
   end
 
-  def render
+  def render(playfield)
     Surface.blit(area, 0, 0, 0, 0, @screen, @start_x, @start_y)
-    (0...@playfield.blocks.length).each do |n|
-     (0...@playfield.blocks[n].length).each do |m|
-       Surface.blit(get_tokens(m)[@playfield.blocks[n][m].type],0,0,0,0 ,@screen,@start_x + (n*16), @end_y - (m*16) - @playfield.ticks)
+    (0...playfield.blocks.length).each do |n|
+     (0...playfield.blocks[n].length).each do |m|
+       Surface.blit(get_tokens(m)[playfield.blocks[n][m].type],0,0,0,0 ,@screen,@start_x + (n*16), @end_y - (m*16) - playfield.ticks) unless playfield.in_cache?(playfield.blocks[n][m])
       end
     end
-    Surface.blit(@playfield.cursor.sprite, 0 ,0, 0, 0, @screen, @start_x + (16 * @playfield.cursor.pos_x) - 2, @end_y - (16 * @playfield.cursor.pos_y) - 2 - @playfield.ticks)
+    Surface.blit(playfield.cursor.sprite, 0 ,0, 0, 0, @screen, @start_x + (16 * playfield.cursor.pos_x) - 2, @end_y - (16 * playfield.cursor.pos_y) - 2 - playfield.ticks)
     @screen.update_rect(@start_x, @start_y, @end_x - @start_x, @end_y - @start_y)
+  end
+
+  def render_swap(block_one, block_two, x, y, ticks, offset)
+    Surface.blit(tokens[block_one.type],0,0,0,0 ,@screen, @start_x + ((x+1)*16) - (offset * 4), @end_y - (y*16) - ticks)
+    Surface.blit(tokens[block_two.type],0,0,0,0 ,@screen, @start_x + (x*16) + (offset * 4), @end_y - (y*16) - ticks)
+#    @screen.update_rect(@start_x, @start_y, @end_x - @start_x, @end_y - @start_y)
+    @screen.update_rect(@start_x + (x*16), @end_y - (y*16) - ticks,32,16)
   end
 
 end
@@ -127,14 +133,12 @@ end
 
 SDL.init(SDL::INIT_EVERYTHING)
 Mixer.open
-screen = Screen.open(256, 222, 0, HWSURFACE | DOUBLEBUF)
+screen = Screen.open(256, 222, 0, HWSURFACE | DOUBLEBUF | FULLSCREEN)
 
 intro = load_music('intro')
 theme = load_music('music')
 
 cursor = Cursor.new
-
-playfield = Playfield.new(cursor)
 
 background = load('background')
 
@@ -156,12 +160,14 @@ Surface.blit(tree, 0, 0, 0, 0, screen, 0, 0)
 
 screen.flip
 
-renderer = Renderer.new(playfield, screen, cursor, [start_x, end_x, start_y, end_y])
+renderer = Renderer.new(screen, cursor, [start_x, end_x, start_y, end_y])
+
+playfield = Playfield.new(cursor, renderer)
+
 Thread.new do
   while true
     sleep(0.4)
-    playfield.tick
-    renderer.render
+    playfield.tick    
   end
 end
 
@@ -174,7 +180,7 @@ while true
     cursor.pos_y += 1 if event.sym == SDL::Key::UP
     cursor.pos_y -= 1 if event.sym == SDL::Key::DOWN
     playfield.swap(cursor.pos_x, cursor.pos_y) if event.sym == SDL::Key::N
-    renderer.render
+    renderer.render(playfield)
   end
 end
 
