@@ -82,20 +82,5 @@ class Playfield
   end
 
 end
-#
-#counter = 0
-#play = Playfield.new(nil)
-#play.blocks.each do |arr|
-#  arr.each do |block|
-#    block.type = counter
-#    counter += 1
-#  end
-#end
-#play.blocks[3][5].type = 1000
-#play.blocks[3][6].type = 1000
-#play.blocks[3][7].type = 1000
-#play.blocks[3][8].type = 1000
-#play.blocks[2][5].type = 1000
-#play.blocks[1][5].type = 1000
-#p play.find_matches
+
 

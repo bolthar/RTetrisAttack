@@ -18,7 +18,19 @@ end
 
 class Cursor
 
-  attr_accessor :pos_x, :pos_y
+  attr_reader :pos_x, :pos_y
+
+  def pos_x=(value)
+    if value > -1 && value < 5
+      @pos_x = value
+    end
+  end
+
+  def pos_y=(value)
+    if value > -1 && value < 11
+      @pos_y = value
+    end
+  end
 
   def initialize
     @pos_x = 0
@@ -34,6 +46,7 @@ class Cursor
     @sprite = load('cursor')
     return @sprite
   end
+
 end
 
 class Renderer
