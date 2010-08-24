@@ -1,3 +1,11 @@
 == tetrisattack
 
 A tetris attack clone
+
+Dependencies:
+= ruby1.9
+= dev packages for sdl image and mixer
+= rubysdl (sudo gem install rubysdl, install the dev packages before installing the gem)
+
+enjoy!
+
