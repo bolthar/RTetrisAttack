@@ -7,5 +7,7 @@ Dependencies:
 = dev packages for sdl image and mixer
 = rubysdl (sudo gem install rubysdl, install the dev packages before installing the gem)
 
+when all dependencies are resolved, ruby1.9 main.rb (in /lib) runs the game.
+
 enjoy!
 
