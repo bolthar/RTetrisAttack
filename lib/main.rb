@@ -113,11 +113,13 @@ class Renderer
   def render(playfield)
     @rendering = true
     Surface.blit(area, 0, 0, 0, 0, @screen, @start_x, @start_y)
-    (0...playfield.blocks.length).each do |n|
-     (0...playfield.blocks[n].length).each do |m|
-       block = playfield.blocks[n][m]
-       Surface.blit(get_tokens(m)[block.type],0,0,0,0 ,@screen,@start_x + (n*16) + block.x_offset, @end_y - (m*16) - playfield.ticks)# unless playfield.in_cache?(playfield.blocks[n][m])
-      end
+    (0...playfield.length).each do |n|
+     (0...playfield[n].length).each do |m|
+       block = playfield[n][m]
+       unless block.kind_of? OutOfBounds
+         Surface.blit(get_tokens(m)[block.type],0,0,0,0 ,@screen,@start_x + (n*16) + block.x_offset, @end_y - (m*16) - playfield.ticks + block.y_offset)
+       end
+     end
     end
     Surface.blit(playfield.cursor.sprite, 0 ,0, 0, 0, @screen, @start_x + (16 * playfield.cursor.pos_x) - 2, @end_y - (16 * playfield.cursor.pos_y) - 2 - playfield.ticks)
     @screen.update_rect(@start_x, @start_y, @end_x - @start_x, @end_y - @start_y)
@@ -158,7 +160,7 @@ screen.flip
 
 renderer = Renderer.new(screen, cursor, [start_x, end_x, start_y, end_y])
 
-playfield = Playfield.new(cursor, renderer)
+playfield = Playfield.new(cursor)
 
 Thread.new do
   while true
@@ -169,7 +171,7 @@ end
 
 Thread.new do
   while true
-    sleep(0.02)
+    sleep(0.01)
     playfield.check_for_matches
     renderer.render(playfield)
   end
