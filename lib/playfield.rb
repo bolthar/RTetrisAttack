@@ -8,14 +8,17 @@ class Playfield < Array
   attr_reader :cursor
 
   def [](column)
-    return super(column) || Stack.new
+    return super(column) || Stack.new(self)
   end
 
   def initialize(cursor)
     (0...6).each do |n|
-      self[n] = Stack.new
+      self[n] = Stack.new(self)
       (0...4).each do |m|
-        self[n][m] = Block.new
+        self[n][m] = Block.new(self[n])
+      end
+      (5...11).each do |m|
+        self[n][m] = OutOfBounds.new(self[n])
       end
     end
     @ticks = 0

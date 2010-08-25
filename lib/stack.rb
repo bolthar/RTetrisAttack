@@ -5,8 +5,10 @@ class Block
   attr_accessor :x_offset, :y_offset
 
   attr_accessor :state
+  attr_accessor :stack
 
-  def initialize
+  def initialize(stack)
+    @stack = stack
     @type = rand(5)
     @x_offset = 0
     @y_offset = 0
@@ -29,14 +31,22 @@ class Block
   end
 
   def fall
+    begin
     @state = :falling
-    4.times do
-      @y_offset += 4
-      sleep(0.01)
+    while @stack[@stack.index(self) - 1].kind_of?(OutOfBounds)
+      while @y_offset < 16
+        @y_offset += 2
+        sleep(0.2)
+      end
+      current_index = @stack.index(self)
+      @stack[current_index - 1] = @stack[current_index]
     end
-    yield
     @y_offset = 0
     @state = :normal
+    rescue Exception => ex
+      p ex
+      p ex.backtrace
+    end
   end
 
 end
@@ -47,40 +57,42 @@ class OutOfBounds < Block
     return false
   end
 
+  def fall
+    
+  end
+  
 end
 
 class Stack < Array
 
-  attr_reader :ticks
+  attr_reader :playfield
 
+  def initialize(playfield)
+    @playfield = playfield
+  end
+  
   def [](row)
-    return super(row) || OutOfBounds.new
+    return super(row) || OutOfBounds.new(self)
+  end
+
+  def []=(row, block)
+    super(row, block)
+    block.stack = self
   end
 
   def advance
     self.each do |block|
-      block.y_offset += 16 if block.state == :falling
+      block.y_offset += 16 if block && block.state == :falling
     end
-    self.insert(0, Block.new)
-  end
-
-  def put_on(height)
-
+    self.insert(0, Block.new(self))
   end
 
   def fall_blocks
     self.each do |block|
-      begin
-      if block && block.state != :falling && self.index(block) != 0 && self[self.index(block) - 1].kind_of?(OutOfBounds)
+      if !block.kind_of?(OutOfBounds) && self.index(block) != 0 && self[self.index(block) - 1].kind_of?(OutOfBounds)
         Thread.new do
-          block.fall do
-            index = self.index(block)
-            self[index], self[index - 1] = self[index - 1], self[index]
-          end
+          block.fall
         end
-      end
-      rescue Exception => ex
-        p ex
       end
     end
   end
