@@ -111,21 +111,17 @@ class Renderer
   end
 
   def render(playfield)
+    @rendering = true
     Surface.blit(area, 0, 0, 0, 0, @screen, @start_x, @start_y)
     (0...playfield.blocks.length).each do |n|
      (0...playfield.blocks[n].length).each do |m|
-       Surface.blit(get_tokens(m)[playfield.blocks[n][m].type],0,0,0,0 ,@screen,@start_x + (n*16), @end_y - (m*16) - playfield.ticks) unless playfield.in_cache?(playfield.blocks[n][m])
+       block = playfield.blocks[n][m]
+       Surface.blit(get_tokens(m)[block.type],0,0,0,0 ,@screen,@start_x + (n*16) + block.x_offset, @end_y - (m*16) - playfield.ticks)# unless playfield.in_cache?(playfield.blocks[n][m])
       end
     end
     Surface.blit(playfield.cursor.sprite, 0 ,0, 0, 0, @screen, @start_x + (16 * playfield.cursor.pos_x) - 2, @end_y - (16 * playfield.cursor.pos_y) - 2 - playfield.ticks)
     @screen.update_rect(@start_x, @start_y, @end_x - @start_x, @end_y - @start_y)
-  end
-
-  def render_swap(block_one, block_two, x, y, ticks, offset)
-    Surface.blit(tokens[block_one.type],0,0,0,0 ,@screen, @start_x + ((x+1)*16) - (offset * 4), @end_y - (y*16) - ticks)
-    Surface.blit(tokens[block_two.type],0,0,0,0 ,@screen, @start_x + (x*16) + (offset * 4), @end_y - (y*16) - ticks)
-#    @screen.update_rect(@start_x, @start_y, @end_x - @start_x, @end_y - @start_y)
-    @screen.update_rect(@start_x + (x*16), @end_y - (y*16) - ticks,32,16)
+    @rendering = false
   end
 
 end
@@ -133,7 +129,7 @@ end
 
 SDL.init(SDL::INIT_EVERYTHING)
 Mixer.open
-screen = Screen.open(256, 222, 0, HWSURFACE | DOUBLEBUF | FULLSCREEN)
+screen = Screen.open(256, 222, 0, HWSURFACE | DOUBLEBUF)
 
 intro = load_music('intro')
 theme = load_music('music')
@@ -166,8 +162,16 @@ playfield = Playfield.new(cursor, renderer)
 
 Thread.new do
   while true
-    sleep(0.4)
+    sleep(0.2)
     playfield.tick    
+  end
+end
+
+Thread.new do
+  while true
+    sleep(0.02)
+    playfield.check_for_matches
+    renderer.render(playfield)
   end
 end
 

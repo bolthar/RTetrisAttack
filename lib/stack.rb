@@ -2,9 +2,19 @@
 class Block
 
   attr_accessor :type
+  attr_reader :x_offset
 
   def initialize
     @type = rand(5)
+    @x_offset = 0
+  end
+
+  def swap(verse)
+    5.times do
+      @x_offset += (4 * verse)
+      sleep(0.02)
+    end
+    @x_offset = 0
   end
 
 end

@@ -2,38 +2,6 @@
 
 require File.dirname(__FILE__) + "/stack.rb"
 
-class SwapCache
-
-  attr_reader :ticks
-
-  def blocks
-    return [@block_data_one[0], @block_data_two[0]]
-  end
-
-  def initialize(block_data_one, block_data_two, ask_for_render)
-    @block_data_one = block_data_one
-    @block_data_two = block_data_two
-    @ticks = 4
-    Thread.new do
-      while @ticks != 0
-        sleep(0.02)        
-        @ticks -= 1
-        ask_for_render.call(self)
-      end
-      yield(@block_data_one, @block_data_two)
-    end
-  end
-
-  def y
-    return @block_data_one[2]
-  end
-
-  def x
-    return @block_data_one[1]
-  end
-
-end
-
 class Playfield
 
   attr_reader :blocks
@@ -72,29 +40,27 @@ class Playfield
     return false
   end
 
-  def ask_for_render(swapcache)
-    block_one = swapcache.blocks[0]
-    block_two = swapcache.blocks[1]
-    @renderer.render_swap(block_one, block_two, swapcache.x, swapcache.y, @ticks, swapcache.ticks)
-  end
-  
   def swap(x, y)
     if @blocks[x][y] && @blocks[x+1][y]
-      cache = SwapCache.new([@blocks[x][y],x,y],[@blocks[x+1][y],x+1,y], method(:ask_for_render)) do |bd1, bd2|
-        @blocks[x][y] = bd2[0]
-        @blocks[x+1][y] = bd1[0]
-        check_for_matches
-        @swapcaches.delete(cache)
+      Thread.new do
+        threads = []
+        threads << Thread.new do
+          @blocks[x][y].swap(1)
+        end
+        threads << Thread.new do
+          @blocks[x+1][y].swap(-1)
+        end
+        threads.each { |t| t.join }
+        @blocks[x][y], @blocks[x+1][y] = @blocks[x+1][y], @blocks[x][y]
       end
-      @swapcaches << cache
     else
-      if @blocks[x][y]
-        @blocks[x+1].push(@blocks[x][y])
-        @blocks[x].delete(@blocks[x][y])
-      elsif @blocks[x+1][y]
-        @blocks[x].push(@blocks[x+1][y])
-        @blocks[x+1].delete(@blocks[x+1][y])
-      end
+#      if @blocks[x][y]
+#        @blocks[x+1].push(@blocks[x][y])
+#        @blocks[x].delete(@blocks[x][y])
+#      elsif @blocks[x+1][y]
+#        @blocks[x].push(@blocks[x+1][y])
+#        @blocks[x+1].delete(@blocks[x+1][y])
+#      end
     end
   end
 
