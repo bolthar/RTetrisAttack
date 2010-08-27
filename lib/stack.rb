@@ -7,11 +7,15 @@ class NormalState
     @block = block
   end
 
-  def tick(playfield)
+  def check_for_falling(playfield)
     index = playfield.index(block)
-    if index > 5 && playfield[index - 6].class == NilBlock && block.class != NilBlock
-      block.state = FallingState.new(block)
+    if index > 5 && !playfield[index - 6].stable? && block.class != NilBlock
+      block.state = FloatingState.new(block)
     end
+  end
+
+  def tick(playfield)
+    check_for_falling(playfield)
   end
   
   def can_swap?
@@ -20,6 +24,10 @@ class NormalState
 
   def matches?(other)
     return @block.type == other.type
+  end
+
+  def stable?
+    return true
   end
 
 end
@@ -52,9 +60,34 @@ class SwappingState < NormalState
   def matches?(other)
     return false
   end
-  
+
 end
 
+class FloatingState < NormalState
+
+  attr_reader :counter
+
+  def initialize(block)
+    super(block)
+    @counter = 0
+  end
+
+  def tick(playfield)
+    @counter += 1
+    if @counter == 8
+      block.state = FallingState.new(block)
+    end
+  end
+
+  def matches?(other)
+    return false
+  end
+
+  def stable?
+    return true
+  end
+
+end
 class FallingState < NormalState
 
   attr_reader :counter
@@ -68,9 +101,15 @@ class FallingState < NormalState
     @counter += 1
     if @counter == 2
       index = playfield.index(block)
-      if index > 5 && playfield[index - 6].class == NilBlock
-        playfield[index - 6], playfield[index] = playfield[index], playfield[index - 6]
-        block.state = NormalState.new(block)
+      if index > 5 && !playfield[index - 6].stable?
+        playfield[index - 6], playfield[index] = playfield[index], playfield[index - 6]        
+        #fix this mess
+        index = playfield.index(block)
+        if index > 5 && !playfield[index - 6].stable?
+          block.state = FallingState.new(block)
+        else
+          block.state = NormalState.new(block)
+        end
       end
     end
   end
@@ -81,6 +120,10 @@ class FallingState < NormalState
 
   def matches?(other)
     return false
+  end
+
+  def stable?
+    return true
   end
   
 end
@@ -110,6 +153,10 @@ class Block
     return @state.can_swap?
   end
 
+  def stable?
+    return @state.stable?
+  end
+
 end
 
 class NilBlock < Block
@@ -119,6 +166,10 @@ class NilBlock < Block
   end
   
   def matches?(other)
+    return false
+  end
+
+  def stable?
     return false
   end
 

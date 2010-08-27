@@ -116,7 +116,7 @@ class Renderer
       (0..11).each do |y|
         block = playfield[x,y]
         unless block.class == NilBlock
-        render_normal(block, x, y, playfield.ticks) if block.state.class == NormalState
+        render_normal(block, x, y, playfield.ticks) if block.state.class == NormalState || block.state.class == FloatingState
         render_swapping(block, x, y, playfield.ticks) if block.state.class == SwappingState
         render_falling(block, x, y, playfield.ticks) if block.state.class == FallingState
         end
