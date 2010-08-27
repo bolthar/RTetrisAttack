@@ -1,100 +1,139 @@
 
-class Block
+class NormalState
 
-  attr_accessor :type
-  attr_accessor :x_offset, :y_offset
+  attr_reader :block
+  
+  def initialize(block)
+    @block = block
+  end
 
-  attr_accessor :state
-  attr_accessor :stack
-
-  def initialize(stack)
-    @stack = stack
-    @type = rand(5)
-    @x_offset = 0
-    @y_offset = 0
-    @state = :normal
+  def tick(playfield)
+    if block.y != 0 && playfield[block.x, block.y - 1].class == NilBlock
+      block.state = FallingState.new(block)
+    end
+  end
+  
+  def can_swap?
+    return true
   end
 
   def matches?(other)
-    return false if @state == :firstrow || @state == :falling || @state == :swapping
-    return other.type == @type
-  end
-
-  def swap(verse)
-    @state = :swapping
-    4.times do
-      @x_offset += (4 * verse)
-      sleep(0.02)
-    end
-    @x_offset = 0
-    @state = :normal
-  end
-
-  def fall
-    begin
-    @state = :falling
-    while @stack[@stack.index(self) - 1].kind_of?(OutOfBounds)
-      while @y_offset < 16
-        @y_offset += 2
-        sleep(0.2)
-      end
-      current_index = @stack.index(self)
-      @stack[current_index - 1] = @stack[current_index]
-    end
-    @y_offset = 0
-    @state = :normal
-    rescue Exception => ex
-      p ex
-      p ex.backtrace
-    end
+    return @block.type == other.type
   end
 
 end
 
-class OutOfBounds < Block
+class SwappingState < NormalState
+
+  attr_reader :counter
+  attr_reader :verse
+  
+  def initialize(block, verse)
+    super(block)
+    @verse = verse
+    @counter = 0
+  end
+
+  def tick(playfield)
+    @counter += 1
+    if @counter == 8
+      playfield[block.x + @verse, block.y] = block
+      block.state = NormalState.new(block)
+    end
+  end
+
+  def can_swap?
+    return false
+  end
 
   def matches?(other)
     return false
   end
+  
+end
 
-  def fall
-    
+class FallingState < NormalState
+
+  attr_reader :counter
+
+  def initialize(block)
+    super(block)
+    @counter = 0
+  end
+
+  def tick(playfield)
+    @counter += 1
+    if @counter == 2
+      if playfield[block.x, block.y - 1].class == NilBlock
+        playfield[block.x, block.y - 1], playfield[block.x, block.y] = playfield[block.x, block.y], playfield[block.x, block.y - 1]
+        block.state = NormalState.new(block)
+      end
+    end
+  end
+
+  def can_swap?
+    return false
+  end
+
+  def matches?(other)
+    return false
   end
   
 end
 
-class Stack < Array
+class Block
 
-  attr_reader :playfield
+  attr_accessor :type
+  attr_accessor :x, :y
 
-  def initialize(playfield)
-    @playfield = playfield
+  attr_accessor :state
+  attr_accessor :stack
+
+  def self.blocks
+    @@blocks ||= []
+    return @@blocks
+  end
+
+  def initialize
+    @type = rand(5)
+    @state = NormalState.new(self)
+    Block.blocks << self
+  end
+
+  def tick(playfield)
+    @state.tick(playfield)
   end
   
-  def [](row)
-    return super(row) || OutOfBounds.new(self)
+  def matches?(other)
+    return false unless other
+    return @state.matches?(other)
   end
 
-  def []=(row, block)
-    super(row, block)
-    block.stack = self
+  def can_swap?
+    return @state.can_swap?
   end
 
-  def advance
-    self.each do |block|
-      block.y_offset += 16 if block && block.state == :falling
+end
+
+class NilBlock < Block
+
+  @@def_instance = nil
+  
+  def self.value
+    unless @@def_instance
+      @@def_instance = NilBlock.new
+      Block.blocks.delete(@@def_instance)
     end
-    self.insert(0, Block.new(self))
+    return @@def_instance
   end
-
-  def fall_blocks
-    self.each do |block|
-      if !block.kind_of?(OutOfBounds) && self.index(block) != 0 && self[self.index(block) - 1].kind_of?(OutOfBounds)
-        Thread.new do
-          block.fall
-        end
-      end
-    end
+  
+  def initialize
+    @state = NormalState.new(self)
+    Block.blocks << self
+  end
+  
+  def matches?(other)
+    return false
   end
 
 end

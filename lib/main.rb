@@ -50,7 +50,6 @@ class Cursor
 end
 
 class Renderer
-
   def initialize(screen, cursor, starting_coordinates)
     @start_x = starting_coordinates[0]
     @end_x = starting_coordinates[1]
@@ -113,17 +112,28 @@ class Renderer
   def render(playfield)
     @rendering = true
     Surface.blit(area, 0, 0, 0, 0, @screen, @start_x, @start_y)
-    (0...playfield.length).each do |n|
-     (0...playfield[n].length).each do |m|
-       block = playfield[n][m]
-       unless block.kind_of? OutOfBounds
-         Surface.blit(get_tokens(m)[block.type],0,0,0,0 ,@screen,@start_x + (n*16) + block.x_offset, @end_y - (m*16) - playfield.ticks + block.y_offset)
-       end
-     end
+    Block.blocks.each do |block|
+      unless block.class == NilBlock
+        render_normal(block, playfield.ticks) if block.state.class == NormalState
+        render_swapping(block, playfield.ticks) if block.state.class == SwappingState
+        render_falling(block, playfield.ticks) if block.state.class == FallingState
+      end
     end
     Surface.blit(playfield.cursor.sprite, 0 ,0, 0, 0, @screen, @start_x + (16 * playfield.cursor.pos_x) - 2, @end_y - (16 * playfield.cursor.pos_y) - 2 - playfield.ticks)
     @screen.update_rect(@start_x, @start_y, @end_x - @start_x, @end_y - @start_y)
     @rendering = false
+  end
+
+  def render_normal(block, ticks)
+    Surface.blit(get_tokens(block.y)[block.type],0,0,0,0 ,@screen,@start_x + (block.x*16), @end_y - (block.y*16) - ticks)
+  end
+
+  def render_swapping(block, ticks)
+    Surface.blit(get_tokens(block.y)[block.type],0,0,0,0 ,@screen,@start_x + (block.x*16) + ((block.state.verse * block.state.counter) * 2), @end_y - (block.y*16) - ticks)
+  end
+
+  def render_falling(block, ticks)
+    Surface.blit(get_tokens(block.y)[block.type],0,0,0,0 ,@screen,@start_x + (block.x*16), @end_y - (block.y*16) - ticks + (block.state.counter * 8))
   end
 
 end
@@ -163,17 +173,17 @@ renderer = Renderer.new(screen, cursor, [start_x, end_x, start_y, end_y])
 playfield = Playfield.new(cursor)
 
 Thread.new do
-  while true
-    sleep(0.2)
-    playfield.tick    
-  end
-end
-
-Thread.new do
+  begin
   while true
     sleep(0.01)
+    playfield.tick
     playfield.check_for_matches
     renderer.render(playfield)
+  end
+  rescue Exception => ex
+    p "render"
+    p ex
+    p ex.backtrace
   end
 end
 
