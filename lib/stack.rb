@@ -9,7 +9,7 @@ class NormalState
 
   def tick(playfield)
     index = playfield.index(block)
-    if index > 5 && playfield[index - 6].class == NilBlock
+    if index > 5 && playfield[index - 6].class == NilBlock && block.class != NilBlock
       block.state = FallingState.new(block)
     end
   end

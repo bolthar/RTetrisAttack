@@ -52,7 +52,7 @@ class Playfield < Array
   end
 
   def tick
-#    @counter += 1
+    @counter += 1
     if @counter == 8
       @ticks += 1
       @counter = 0
