@@ -8,7 +8,8 @@ class NormalState
   end
 
   def tick(playfield)
-    if block.y != 0 && playfield[block.x, block.y - 1].class == NilBlock
+    index = playfield.index(block)
+    if index > 5 && playfield[index - 6].class == NilBlock
       block.state = FallingState.new(block)
     end
   end
@@ -37,8 +38,10 @@ class SwappingState < NormalState
   def tick(playfield)
     @counter += 1
     if @counter == 8
-      playfield[block.x + @verse, block.y] = block
+      index = playfield.index(block)
+      playfield[index + @verse], playfield[index] = playfield[index], playfield[index + @verse] if @verse == 1
       block.state = NormalState.new(block)
+      playfield[index].state = NormalState.new(playfield[index])
     end
   end
 
@@ -64,8 +67,9 @@ class FallingState < NormalState
   def tick(playfield)
     @counter += 1
     if @counter == 2
-      if playfield[block.x, block.y - 1].class == NilBlock
-        playfield[block.x, block.y - 1], playfield[block.x, block.y] = playfield[block.x, block.y], playfield[block.x, block.y - 1]
+      index = playfield.index(block)
+      if index > 5 && playfield[index - 6].class == NilBlock
+        playfield[index - 6], playfield[index] = playfield[index], playfield[index - 6]
         block.state = NormalState.new(block)
       end
     end
@@ -84,20 +88,13 @@ end
 class Block
 
   attr_accessor :type
-  attr_accessor :x, :y
 
   attr_accessor :state
   attr_accessor :stack
 
-  def self.blocks
-    @@blocks ||= []
-    return @@blocks
-  end
-
   def initialize
     @type = rand(5)
     @state = NormalState.new(self)
-    Block.blocks << self
   end
 
   def tick(playfield)
@@ -117,19 +114,8 @@ end
 
 class NilBlock < Block
 
-  @@def_instance = nil
-  
-  def self.value
-    unless @@def_instance
-      @@def_instance = NilBlock.new
-      Block.blocks.delete(@@def_instance)
-    end
-    return @@def_instance
-  end
-  
   def initialize
     @state = NormalState.new(self)
-    Block.blocks << self
   end
   
   def matches?(other)

@@ -112,11 +112,14 @@ class Renderer
   def render(playfield)
     @rendering = true
     Surface.blit(area, 0, 0, 0, 0, @screen, @start_x, @start_y)
-    Block.blocks.each do |block|
-      unless block.class == NilBlock
-        render_normal(block, playfield.ticks) if block.state.class == NormalState
-        render_swapping(block, playfield.ticks) if block.state.class == SwappingState
-        render_falling(block, playfield.ticks) if block.state.class == FallingState
+    (0..5).each do |x|
+      (0..11).each do |y|
+        block = playfield[x,y]
+        unless block.class == NilBlock
+        render_normal(block, x, y, playfield.ticks) if block.state.class == NormalState
+        render_swapping(block, x, y, playfield.ticks) if block.state.class == SwappingState
+        render_falling(block, x, y, playfield.ticks) if block.state.class == FallingState
+        end
       end
     end
     Surface.blit(playfield.cursor.sprite, 0 ,0, 0, 0, @screen, @start_x + (16 * playfield.cursor.pos_x) - 2, @end_y - (16 * playfield.cursor.pos_y) - 2 - playfield.ticks)
@@ -124,16 +127,16 @@ class Renderer
     @rendering = false
   end
 
-  def render_normal(block, ticks)
-    Surface.blit(get_tokens(block.y)[block.type],0,0,0,0 ,@screen,@start_x + (block.x*16), @end_y - (block.y*16) - ticks)
+  def render_normal(block, x, y, ticks)
+    Surface.blit(get_tokens(y)[block.type],0,0,0,0 ,@screen,@start_x + (x*16), @end_y - (y*16) - ticks)
   end
 
-  def render_swapping(block, ticks)
-    Surface.blit(get_tokens(block.y)[block.type],0,0,0,0 ,@screen,@start_x + (block.x*16) + ((block.state.verse * block.state.counter) * 2), @end_y - (block.y*16) - ticks)
+  def render_swapping(block, x, y, ticks)
+    Surface.blit(get_tokens(y)[block.type],0,0,0,0 ,@screen,@start_x + (x*16) + ((block.state.verse * block.state.counter) * 2), @end_y - (y*16) - ticks)
   end
 
-  def render_falling(block, ticks)
-    Surface.blit(get_tokens(block.y)[block.type],0,0,0,0 ,@screen,@start_x + (block.x*16), @end_y - (block.y*16) - ticks + (block.state.counter * 8))
+  def render_falling(block, x, y, ticks)
+    Surface.blit(get_tokens(y)[block.type],0,0,0,0 ,@screen,@start_x + (x*16), @end_y - (y*16) - ticks + (block.state.counter * 8))
   end
 
 end

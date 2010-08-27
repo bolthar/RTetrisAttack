@@ -7,16 +7,22 @@ class Playfield < Array
   attr_reader :ticks
   attr_reader :cursor
 
-  def [](column, row)
-    return NilBlock.value if column < 0
-    return NilBlock.value if row < 0
-    return super(column + (row*6)) || NilBlock.value
+  def [](*args)
+    if args.length == 2
+      return NilBlock.new if args[0] < 0
+      return NilBlock.new if args[1] < 0
+      return super(args[0] + (args[1]*6)) || NilBlock.new
+    else
+      super(*args)
+    end
   end
 
-  def []=(column, row, block)    
-    block.x = column
-    block.y = row
-    super(column + (row*6), block)
+  def []=(*args)
+    if args.length == 3
+      super(args[0] + (args[1]*6), args[2])
+    else      
+      super(args[0], args[1])
+    end
   end
 
   def initialize(cursor)
@@ -36,24 +42,22 @@ class Playfield < Array
   def get_non_matching_block(column, row)
     while true
       block = Block.new
-      if block.matches?(self[column + 1, row]) ||
+      unless block.matches?(self[column + 1, row]) ||
          block.matches?(self[column - 1, row]) ||
          block.matches?(self[column, row + 1]) ||
          block.matches?(self[column, row - 1])
-         Block.blocks.delete(block)
-      else
         return block
       end
     end
   end
 
   def tick
-    @counter += 1
+#    @counter += 1
     if @counter == 8
       @ticks += 1
       @counter = 0
     end
-    Block.blocks.each do |block|
+    self.each do |block|
       block.tick(self)
     end
     if @ticks == 16
@@ -73,10 +77,8 @@ class Playfield < Array
   def swap(x, y)
     block_left  = self[x,y]
     block_right = self[x+1, y]
-    if block_left.can_swap?
+    if block_left.can_swap? && block_right.can_swap?
       block_left.state = SwappingState.new(block_left, 1)
-    end
-    if block_right.can_swap?
       block_right.state = SwappingState.new(block_right, -1)
     end    
   end
@@ -84,24 +86,26 @@ class Playfield < Array
   def check_for_matches
     matches = find_matches
     matches.each do |match|
-      match.each do |block|
-        self[block.x, block.y] = NilBlock.new
-        Block.blocks.delete(block)
+      match.each do |block|        
+        index = self.index(block)
+        if index != nil
+          self[index] = NilBlock.new
+        end
       end
     end
   end
 
   def find_matches
     matches = []
-    self.each do |block|
-      if block
-        horizontal_matches = search_x(block.x, block.y, -1) | search_x(block.x, block.y, 1)
-        vertical_matches   = search_y(block.x, block.y, -1) | search_y(block.x, block.y, 1)
+    (0..5).each do |x|
+      (0..11).each do |y|
+        horizontal_matches = search_x(x, y, -1) | search_x(x, y, 1)
+        vertical_matches   = search_y(x, y, -1) | search_y(x, y, 1)
         match = []
         match = match | horizontal_matches if horizontal_matches.length > 2
         match = match | vertical_matches if vertical_matches.length > 2
         matches << match if match.any?
-      end
+      end      
     end
     return matches
   end
