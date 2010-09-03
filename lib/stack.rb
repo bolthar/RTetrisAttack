@@ -88,6 +88,7 @@ class FloatingState < NormalState
   end
 
 end
+
 class FallingState < NormalState
 
   attr_reader :counter
