@@ -57,6 +57,9 @@ class Playfield < Array
       @ticks += 1
       @counter = 0
     end
+    self.each do |block|
+      block.ticked = false
+    end
     (0..11).to_a.reverse.each do |row|
       (0..5).each do |column|
         self[column, row].tick(self)

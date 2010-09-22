@@ -2,6 +2,7 @@
 class NormalState
 
   attr_reader :block
+  attr_writer :ticked
   
   def initialize(block)
     @block = block
@@ -84,7 +85,7 @@ class FloatingState < NormalState
   end
 
   def stable?
-    return true
+    return false
   end
 
 end
@@ -124,7 +125,7 @@ class FallingState < NormalState
   end
 
   def stable?
-    return true
+    return false
   end
   
 end
@@ -136,15 +137,20 @@ class Block
   attr_accessor :state
   attr_accessor :stack
 
+  attr_accessor :ticked
+
   def initialize
     @type = rand(5)
     @state = NormalState.new(self)
   end
 
   def tick(playfield)
-    @state.tick(playfield)
+    unless @ticked
+      @state.tick(playfield)
+      @ticked = true
+    end
   end
-  
+
   def matches?(other)
     return false unless other
     return @state.matches?(other)
@@ -172,6 +178,10 @@ class NilBlock < Block
 
   def stable?
     return false
+  end
+
+  def execute_tick
+    
   end
 
 end

@@ -10,7 +10,6 @@ class Block
     #set neighbours first...
     @@blocks.delete(block)
   end
-
   attr_reader :type
 
   attr_reader :left, :right, :up, :down
