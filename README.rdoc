@@ -9,7 +9,7 @@ Pre-alpha, not a working game yet.
 - dev packages for sdl image and mixer
 - rubysdl (sudo gem install rubysdl, install the dev packages before installing the gem)
 
-when all dependencies are resolved, ruby1.9 main.rb (in /lib) runs the game.
+when all dependencies are resolved, ruby1.9 tetrisattack.rb (in /lib) runs the game.
 
 Arrow keys to move around
 N to swap blocks
