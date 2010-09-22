@@ -1,7 +1,4 @@
 
-
-require File.dirname(__FILE__) + "/stack.rb"
-
 class Playfield < Array
 
   attr_reader :ticks
@@ -135,5 +132,3 @@ class Playfield < Array
   end
 
 end
-
-
