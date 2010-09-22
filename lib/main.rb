@@ -5,15 +5,15 @@ require File.join(File.dirname(__FILE__), 'playfield.rb')
 include SDL
 
 def load(filename)
-  return Surface.load((File.join(File.dirname(__FILE__), filename + '.png')))
+  return Surface.load((File.join(File.dirname(__FILE__), "data", "img", filename + '.png')))
 end
 
 def load_music(filename)
-  return Mixer::Music.load((File.join(File.dirname(__FILE__), filename + '.ogg')))
+  return Mixer::Music.load((File.join(File.dirname(__FILE__), "data", "sound", filename + '.ogg')))
 end
 
 def load_wave(filename)
-  return Mixer::Wave.load((File.join(File.dirname(__FILE__), filename + '.ogg')))
+  return Mixer::Wave.load((File.join(File.dirname(__FILE__), "data", "sound", filename + '.ogg')))
 end
 
 class Cursor
@@ -37,10 +37,6 @@ class Cursor
     @pos_y = 1
   end
 
-  def load(filename)
-    return Surface.load((File.join(File.dirname(__FILE__), filename + '.png')))
-  end
-
   def sprite
     return @sprite if @sprite
     @sprite = load('cursor')
@@ -57,10 +53,6 @@ class Renderer
     @end_y = starting_coordinates[3]
     @screen = screen
     @cursor = cursor
-  end
-
-  def load(filename)
-    return Surface.load((File.join(File.dirname(__FILE__), filename + '.png')))
   end
 
   def area
