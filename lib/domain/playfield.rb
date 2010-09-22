@@ -8,6 +8,7 @@ class Playfield < Array
     if args.length == 2
       return NilBlock.new if args[0] < 0
       return NilBlock.new if args[1] < 0
+      return NilBlock.new if args[0] > 5
       return super(args[0] + (args[1]*6)) || NilBlock.new
     else
       super(*args)
