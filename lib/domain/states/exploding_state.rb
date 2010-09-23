@@ -22,4 +22,8 @@ class ExplodingState < NormalState
     return true
   end
 
+  def can_swap?
+    return false
+  end
+
 end

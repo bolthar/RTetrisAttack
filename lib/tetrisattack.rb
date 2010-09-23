@@ -44,7 +44,7 @@ playfield = Playfield.new(cursor)
 Thread.new do
   begin
   while true
-    sleep(0.01)
+    sleep(0.02)
     playfield.tick
     playfield.check_for_matches
     renderer.render(playfield)
