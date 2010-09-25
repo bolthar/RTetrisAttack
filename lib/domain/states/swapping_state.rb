@@ -12,7 +12,7 @@ class SwappingState < NormalState
 
   def tick(playfield)
     @counter += 1
-    if @counter == 8
+    if @counter == 4
       index = playfield.index(block)
       playfield[index + @verse], playfield[index] = playfield[index], playfield[index + @verse] if @verse == 1
       block.state = NormalState.new(block)

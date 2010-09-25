@@ -99,7 +99,7 @@ class Renderer
   end
 
   def render_swapping(block, x, y, ticks)
-    Surface.blit(get_tokens(y, block.state)[block.type],0,0,0,0 ,@screen,@start_x + (x*16) + ((block.state.verse * block.state.counter) * 2), @end_y - (y*16) - ticks)
+    Surface.blit(get_tokens(y, block.state)[block.type],0,0,0,0 ,@screen,@start_x + (x*16) + ((block.state.verse * block.state.counter) * 4), @end_y - (y*16) - ticks)
   end
 
   def render_falling(block, x, y, ticks)
