@@ -52,7 +52,7 @@ class Playfield < Array
   def tick
     @counter += 1
     if @counter == 8
-      @ticks += 1
+      @ticks += 1 unless self.any? { |b| b.state.class == ExplodingState }
       @counter = 0
     end
     self.each do |block|

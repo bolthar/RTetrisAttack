@@ -19,7 +19,6 @@ class FallingState < NormalState
         if index > 5 && !playfield[index - 6].stable?
           block.state = FallingState.new(block)
         else
-          p "here"
           block.state = NormalState.new(block)
         end
       end
