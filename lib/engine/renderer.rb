@@ -8,6 +8,7 @@ class Renderer
     @end_y = starting_coordinates[3]
     @screen = screen
     @cursor = cursor
+    @bounce_animation = {}
   end
 
   def area
@@ -70,14 +71,16 @@ class Renderer
     return altered_surface
   end
 
-  def blue_bounce_animation
-    return @blue_bounce_animation if @blue_bounce_animation
-    blue_bounce = ResourceLoader.load('bluebounce')
-    bb1 = blue_bounce.copy_rect(0, 0, 16, 16)
-    bb2 = blue_bounce.copy_rect(16, 0, 16, 16)
-    bb3 = blue_bounce.copy_rect(32, 0, 16, 16)
-    @blue_bounce_animation = [bb1, bb2, bb3]
-    return @blue_bounce_animation
+  def bounce_animation(type)
+    return @bounce_animation[type] if @bounce_animation[type]
+    typename = "blue" if type == 1
+    typename = "yellow" if type == 3
+    bounce = ResourceLoader.load("#{typename}bounce")
+    bb1 = bounce.copy_rect(0, 0, 16, 16)
+    bb2 = bounce.copy_rect(16, 0, 16, 16)
+    bb3 = bounce.copy_rect(32, 0, 16, 16)
+    @bounce_animation[type] = [bb1, bb2, bb3]
+    return @bounce_animation[type]
   end
 
   def get_tokens(row, state)
@@ -105,8 +108,14 @@ class Renderer
     @rendering = false
   end
 
+  def render_block(surface, x, y)
+    Surface.blit(surface, 0, 0, 0, 0, @screen, x, y)
+  end
+
   def render_normal(block, x, y, ticks)
-    Surface.blit(get_tokens(y, block.state)[block.type],0,0,0,0 ,@screen,@start_x + (x*16), @end_y - (y*16) - ticks)
+    render_block(get_tokens(y, block.state)[block.type],
+                 @start_x + (x*16),
+                 @end_y - (y*16) - ticks)
   end
 
   def render_swapping(block, x, y, ticks)
@@ -118,8 +127,8 @@ class Renderer
   end
 
   def render_bouncing(block, x, y, ticks)
-    if block.type == 1
-      Surface.blit(blue_bounce_animation[block.state.animation_frame],0,0,0,0, @screen,@start_x + (x*16), @end_y - (y*16) - ticks)
+    if block.type == 1 || block.type == 3
+      Surface.blit(bounce_animation(block.type)[block.state.animation_frame],0,0,0,0, @screen,@start_x + (x*16), @end_y - (y*16) - ticks)
     else
       render_normal(block, x, y, ticks)
     end
