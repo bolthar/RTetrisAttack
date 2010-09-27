@@ -92,7 +92,6 @@ class Playfield < Array
       match.each do |block|        
         index = self.index(block)
         if index != nil
-          p block.state.class
           self[index].state = ExplodingState.new(self[index])
         end
       end

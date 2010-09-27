@@ -19,7 +19,7 @@ class FallingState < NormalState
         if index > 5 && !playfield[index - 6].stable?
           block.state = FallingState.new(block)
         else
-          block.state = NormalState.new(block)
+          block.state = BouncingState.new(block)
         end
       end
     end

@@ -70,6 +70,16 @@ class Renderer
     return altered_surface
   end
 
+  def blue_bounce_animation
+    return @blue_bounce_animation if @blue_bounce_animation
+    blue_bounce = ResourceLoader.load('bluebounce')
+    bb1 = blue_bounce.copy_rect(0, 0, 16, 16)
+    bb2 = blue_bounce.copy_rect(16, 0, 16, 16)
+    bb3 = blue_bounce.copy_rect(32, 0, 16, 16)
+    @blue_bounce_animation = [bb1, bb2, bb3]
+    return @blue_bounce_animation
+  end
+
   def get_tokens(row, state)
     return dark_tokens if row == 0
     return light_tokens if state.class == ExplodingState
@@ -84,6 +94,7 @@ class Renderer
         block = playfield[x,y]
         unless block.class == NilBlock
         render_normal(block, x, y, playfield.ticks) if block.state.class == NormalState || block.state.class == FloatingState || block.state.class == ExplodingState
+        render_bouncing(block, x, y, playfield.ticks) if block.state.class == BouncingState
         render_swapping(block, x, y, playfield.ticks) if block.state.class == SwappingState
         render_falling(block, x, y, playfield.ticks) if block.state.class == FallingState
         end
@@ -104,6 +115,14 @@ class Renderer
 
   def render_falling(block, x, y, ticks)
     Surface.blit(get_tokens(y, block.state)[block.type],0,0,0,0 ,@screen,@start_x + (x*16), @end_y - (y*16) - ticks + (block.state.counter * 8))
+  end
+
+  def render_bouncing(block, x, y, ticks)
+    if block.type == 1
+      Surface.blit(blue_bounce_animation[block.state.animation_frame],0,0,0,0, @screen,@start_x + (x*16), @end_y - (y*16) - ticks)
+    else
+      render_normal(block, x, y, ticks)
+    end
   end
 
 end
