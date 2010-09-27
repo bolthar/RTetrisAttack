@@ -3,6 +3,7 @@ class NilBlock < Block
 
   def initialize
     @state = NormalState.new(self)
+    @effects = []
   end
 
   def matches?(other)
@@ -13,8 +14,7 @@ class NilBlock < Block
     return false
   end
 
-  def tick(playfield)
-    @ticked = true
+  def execute_tick
   end
 
 end
