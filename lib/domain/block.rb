@@ -6,6 +6,8 @@ class Block
   attr_accessor :state
   attr_accessor :stack
 
+  attr_accessor :bonus
+
   attr_accessor :ticked
 
   def initialize

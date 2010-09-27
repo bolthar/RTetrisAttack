@@ -14,6 +14,7 @@ class BouncingState < NormalState
     @counter += 1
     if @counter == 6
       block.state = NormalState.new(block)
+      block.bonus = false
     end
     super(playfield)
   end

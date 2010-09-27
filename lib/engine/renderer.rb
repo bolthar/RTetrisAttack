@@ -19,11 +19,11 @@ class Renderer
 
   def tokens
     return @tokens if @tokens
-    green = ResourceLoader.load(0)
-    blue = ResourceLoader.load(1)
-    violet = ResourceLoader.load(2)
-    yellow = ResourceLoader.load(3)
-    red = ResourceLoader.load(4)
+    green = ResourceLoader.load('0')
+    blue = ResourceLoader.load('1')
+    violet = ResourceLoader.load('2')
+    yellow = ResourceLoader.load('3')
+    red = ResourceLoader.load('4')
     @tokens = {0 => green, 1 => blue, 2 => violet, 3 => yellow, 4 => red}
     return @tokens
   end
