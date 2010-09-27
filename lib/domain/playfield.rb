@@ -92,6 +92,7 @@ class Playfield < Array
       match.each do |block|        
         index = self.index(block)
         if index != nil
+          p block.state.class
           self[index].state = ExplodingState.new(self[index])
         end
       end
@@ -121,14 +122,14 @@ class Playfield < Array
   def search_x(x, y, verse, results = [])
     return results unless self[x,y]
     results << self[x,y]
-    return search_x(x + verse, y, verse, results) if self[x,y].matches?(self[x + verse,y])
+    return search_x(x + verse, y, verse, results) if self[x,y].matches?(self[x + verse,y]) && self[x + verse, y].matches?(self[x,y])
     return results
   end
 
   def search_y(x, y, verse, results = [])
     return results if y == 0 || !self[x,y]
     results << self[x,y] 
-    return search_y(x, y + verse, verse, results) if self[x,y].matches?(self[x,y + verse])
+    return search_y(x, y + verse, verse, results) if self[x,y].matches?(self[x,y + verse]) && self[x, y + verse].matches?(self[x,y])
     return results
   end
 

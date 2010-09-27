@@ -29,7 +29,7 @@ class FallingState < NormalState
     return false
   end
 
-  def matches?(other)
+  def matches?(other)    
     return false
   end
 
