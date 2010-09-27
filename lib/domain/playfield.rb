@@ -35,6 +35,7 @@ class Playfield < Array
     @ticks = 0
     @counter = 0
     @cursor = cursor
+    @multiplier = 0
   end
 
   def get_non_matching_block(column, row)
@@ -58,6 +59,7 @@ class Playfield < Array
     self.each do |block|
       block.ticked = false
     end
+    @multiplier = 0 unless active_bonus?
     (0..11).to_a.each do |row|
       (0..5).each do |column|
         self[column, row].tick(self)
@@ -86,9 +88,14 @@ class Playfield < Array
     end    
   end
 
+  def active_bonus?
+    return self.any? { |b| b.bonus }
+  end
+
   def check_for_matches
     match = find_matches
-    p "x2!" if match.any? { |b| b.bonus }
+    @multiplier += 1 if match.any? { |b| b.bonus }
+    p @multiplier, active_bonus?
     match.each do |block|        
       index = self.index(block)
       if index != nil         
@@ -100,7 +107,7 @@ class Playfield < Array
   def find_matches
     matches = []
     (0..5).each do |x|
-      (0..11).each do |y|
+      (1..11).each do |y|
         horizontal_matches = search_x(x, y, -1) | search_x(x, y, 1)
         vertical_matches   = search_y(x, y, -1) | search_y(x, y, 1)
         match = []
