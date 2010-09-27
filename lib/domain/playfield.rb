@@ -87,14 +87,12 @@ class Playfield < Array
   end
 
   def check_for_matches
-    matches = find_matches
-    matches.each do |match|
-      match.each do |block|        
-        index = self.index(block)
-        if index != nil
-          p "x2!" if self[index].bonus
-          self[index].state = ExplodingState.new(self[index])
-        end
+    match = find_matches
+    p "x2!" if match.any? { |b| b.bonus }
+    match.each do |block|        
+      index = self.index(block)
+      if index != nil         
+        self[index].state = ExplodingState.new(self[index])
       end
     end
   end
@@ -111,7 +109,7 @@ class Playfield < Array
         matches << match if match.any?
       end      
     end
-    return matches
+    return matches.flatten.uniq
   end
 
   def merge_matches(match, other_match)
