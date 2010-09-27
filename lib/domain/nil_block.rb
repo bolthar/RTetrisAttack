@@ -13,8 +13,8 @@ class NilBlock < Block
     return false
   end
 
-  def execute_tick
-
+  def tick(playfield)
+    @ticked = true
   end
 
 end

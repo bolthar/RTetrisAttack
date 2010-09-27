@@ -10,14 +10,20 @@ class Block
 
   attr_accessor :ticked
 
+  attr_reader :effects
+
   def initialize
+    @effects = []
     @type = rand(5)
-    @state = NormalState.new(self)
+    @state = NormalState.new(self)    
   end
 
   def tick(playfield)
     unless @ticked
       @state.tick(playfield)
+      @effects.each do |effect|
+        effect.tick(self)
+      end
       @ticked = true
     end
   end

@@ -9,6 +9,10 @@ class Renderer
     @screen = screen
     @cursor = cursor
     @bounce_animation = {}
+    #Temp...
+    @bonus4  = ResourceLoader.load('bonus4')
+    @bonus5  = ResourceLoader.load('bonus5')
+    @bonusx2 = ResourceLoader.load('bonusx2')
   end
 
   def area
@@ -87,6 +91,12 @@ class Renderer
     return tokens
   end
 
+  def get_effect(effect)
+    return @bonus4 if effect.class == LengthBonus && effect.length == 4
+    return @bonus5 if effect.class == LengthBonus #add more...
+    return @bonusx2 if effect.class == ChainBonus
+  end
+
   def render(playfield)
     @rendering = true
     Surface.blit(area, 0, 0, 0, 0, @screen, @start_x, @start_y)
@@ -97,7 +107,15 @@ class Renderer
         render_normal(block, x, y, playfield.ticks) if block.state.class == NormalState || block.state.class == FloatingState || block.state.class == ExplodingState
         render_bouncing(block, x, y, playfield.ticks) if block.state.class == BouncingState
         render_swapping(block, x, y, playfield.ticks) if block.state.class == SwappingState
-        render_falling(block, x, y, playfield.ticks) if block.state.class == FallingState
+        render_falling(block, x, y, playfield.ticks) if block.state.class == FallingState        
+        end
+      end
+    end
+    (0..5).each do |x|
+      (0..11).each do |y|
+        block = playfield[x,y]
+        unless block.class == NilBlock
+          render_effects(block.effects, x, y)
         end
       end
     end
@@ -126,6 +144,13 @@ class Renderer
 
   def render_bouncing(block, x, y, ticks)
     Surface.blit(bounce_animation(block.type)[block.state.animation_frame],0,0,0,0, @screen,@start_x + (x*16), @end_y - (y*16) - ticks)
+  end
+
+  def render_effects(effects, x, y)
+    effects.each do |effect|
+      surface = get_effect(effect)
+      Surface.blit(surface, 0, 0, 0, 0, @screen, @start_x + (x*16), @end_y - (y*16) - 10 + (2*(8 - (Math.sqrt(effect.counter)))))
+    end
   end
 
 end

@@ -92,10 +92,17 @@ class Playfield < Array
     return self.any? { |b| b.bonus }
   end
 
+  def get_effect_block(match)
+    return match
+    .sort { |a,b| self.index(a) % 6 <=> self.index(b) % 6 }
+    .sort { |a,b| self.index(b) / 6 <=> self.index(a) / 6 }.first
+  end
+
   def check_for_matches
     match = find_matches
-    @multiplier += 1 if match.any? { |b| b.bonus }
-    p @multiplier, active_bonus?
+    effect_block = get_effect_block(match)
+    effect_block.effects << LengthBonus.new(match.count) if match.count > 3
+    effect_block.effects << ChainBonus.new if match.any? { |b| b.bonus }
     match.each do |block|        
       index = self.index(block)
       if index != nil         
