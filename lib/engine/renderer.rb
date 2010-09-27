@@ -147,9 +147,11 @@ class Renderer
   end
 
   def render_effects(effects, x, y)
+    offset = 0
     effects.each do |effect|
       surface = get_effect(effect)
-      Surface.blit(surface, 0, 0, 0, 0, @screen, @start_x + (x*16), @end_y - (y*16) - 10 + (2*(8 - (Math.sqrt(effect.counter)))))
+      Surface.blit(surface, 0, 0, 0, 0, @screen, @start_x + (x*16), @end_y - (y*16) - 10 - offset + (2*(8 - (Math.sqrt(effect.counter)))))
+      offset += 20
     end
   end
 

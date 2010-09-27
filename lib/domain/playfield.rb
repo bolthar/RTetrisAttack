@@ -1,4 +1,5 @@
 
+
 class Playfield < Array
 
   attr_reader :ticks
