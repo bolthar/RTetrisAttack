@@ -19,11 +19,11 @@ class Renderer
 
   def tokens
     return @tokens if @tokens
-    green = ResourceLoader.load('green')
-    blue = ResourceLoader.load('blue')
-    violet = ResourceLoader.load('violet')
-    yellow = ResourceLoader.load('yellow')
-    red = ResourceLoader.load('red')
+    green = ResourceLoader.load(0)
+    blue = ResourceLoader.load(1)
+    violet = ResourceLoader.load(2)
+    yellow = ResourceLoader.load(3)
+    red = ResourceLoader.load(4)
     @tokens = {0 => green, 1 => blue, 2 => violet, 3 => yellow, 4 => red}
     return @tokens
   end
@@ -72,10 +72,8 @@ class Renderer
   end
 
   def bounce_animation(type)
-    return @bounce_animation[type] if @bounce_animation[type]
-    typename = "blue" if type == 1
-    typename = "yellow" if type == 3
-    bounce = ResourceLoader.load("#{typename}bounce")
+    return @bounce_animation[type] if @bounce_animation[type]   
+    bounce = ResourceLoader.load("#{type}bounce")
     bb1 = bounce.copy_rect(0, 0, 16, 16)
     bb2 = bounce.copy_rect(16, 0, 16, 16)
     bb3 = bounce.copy_rect(32, 0, 16, 16)
@@ -127,11 +125,7 @@ class Renderer
   end
 
   def render_bouncing(block, x, y, ticks)
-    if block.type == 1 || block.type == 3
-      Surface.blit(bounce_animation(block.type)[block.state.animation_frame],0,0,0,0, @screen,@start_x + (x*16), @end_y - (y*16) - ticks)
-    else
-      render_normal(block, x, y, ticks)
-    end
+    Surface.blit(bounce_animation(block.type)[block.state.animation_frame],0,0,0,0, @screen,@start_x + (x*16), @end_y - (y*16) - ticks)
   end
 
 end
