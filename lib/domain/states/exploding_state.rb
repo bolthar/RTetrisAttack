@@ -20,6 +20,10 @@ class ExplodingState < NormalState
     end
   end
 
+  def is_light?
+    return @counter % 4 == 0
+  end
+
   def matches?(other)
     return false
   end

@@ -18,24 +18,16 @@ theme = ResourceLoader.load_music('music')
 
 cursor = Cursor.new
 
-background = ResourceLoader.load('background')
-tree = ResourceLoader.load('tree')
-
-start_x = 88
-end_x = 184
-start_y = 23
-end_y = 215
-
 Thread.new do
   Mixer.play_music(intro, 0)
   sleep(1.94)
   Mixer.play_music(theme, -1)
 end
 
-Surface.blit(background, 0, 0, 0, 0, screen, 0, 0)
-Surface.blit(tree, 0, 0, 0, 0, screen, 0, 0)
-
-screen.flip
+start_x = 88
+end_x = 184
+start_y = 23
+end_y = 215
 
 renderer = Renderer.new(screen, cursor, [start_x, end_x, start_y, end_y])
 
@@ -43,6 +35,7 @@ playfield = Playfield.new(cursor)
 
 Thread.new do
   begin
+  renderer.startup
   while true
     sleep(0.02)
     playfield.tick
