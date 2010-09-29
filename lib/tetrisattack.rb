@@ -8,6 +8,7 @@ require_all File.join(File.dirname(__FILE__), "engine")
 require 'sdl'
 include SDL
 
+exit if defined?(Ocra)
 
 SDL.init(SDL::INIT_EVERYTHING)
 Mixer.open
