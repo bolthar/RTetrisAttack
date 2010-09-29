@@ -13,16 +13,9 @@ SDL.init(SDL::INIT_EVERYTHING)
 Mixer.open
 screen = Screen.open(256, 222, 0, HWSURFACE | DOUBLEBUF)
 
-intro = ResourceLoader.load_music('intro')
 theme = ResourceLoader.load_music('music')
 
 cursor = Cursor.new
-
-Thread.new do
-  Mixer.play_music(intro, 0)
-  sleep(1.94)
-  Mixer.play_music(theme, -1)
-end
 
 start_x = 88
 end_x = 184
@@ -30,15 +23,18 @@ start_y = 23
 end_y = 215
 
 renderer = Renderer.new(screen, cursor, [start_x, end_x, start_y, end_y])
+mixer = SoundPlayer.new
 
 playfield = Playfield.new(cursor)
 
 Thread.new do
   begin
   renderer.startup
+  mixer.play_music(theme)
   while true
     sleep(0.02)
     playfield.tick
+    mixer.play(playfield)
     playfield.check_for_matches
     renderer.render(playfield)
   end

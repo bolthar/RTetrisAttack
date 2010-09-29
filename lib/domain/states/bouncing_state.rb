@@ -1,6 +1,8 @@
 
 class BouncingState < NormalState
 
+  attr_reader :counter
+  
   def initialize(block)
     super(block)
     @counter = 0
