@@ -31,7 +31,6 @@ playfield = Playfield.new(cursor)
 Thread.new do
   begin
   renderer.startup
-  mixer.play_music(theme)
   while true
     sleep(0.02)
     playfield.tick
