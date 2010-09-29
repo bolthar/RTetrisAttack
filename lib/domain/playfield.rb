@@ -5,6 +5,8 @@ class Playfield < Array
   attr_reader :ticks
   attr_reader :cursor
 
+  attr_accessor :scroll
+  
   def [](*args)
     if args.length == 2
       return NilBlock.new if args[0] < 0
@@ -53,7 +55,7 @@ class Playfield < Array
 
   def tick
     @counter += 1
-    if @counter == 8
+    if @counter == 8 || @scroll
       @ticks += 1 unless self.any? { |b| b.state.class == ExplodingState }
       @counter = 0
     end

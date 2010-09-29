@@ -54,6 +54,10 @@ while true
     cursor.pos_y += 1 if event.sym == SDL::Key::UP
     cursor.pos_y -= 1 if event.sym == SDL::Key::DOWN
     playfield.swap(cursor.pos_x, cursor.pos_y) if event.sym == SDL::Key::N
+    playfield.scroll = true if event.sym == SDL::Key::M
     renderer.render(playfield)
+  end
+  if event.kind_of? Event::KeyUp
+    playfield.scroll = false if event.sym == SDL::Key::M
   end
 end
