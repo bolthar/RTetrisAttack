@@ -104,10 +104,11 @@ class Playfield < Array
     effect_block = get_effect_block(match)
     effect_block.effects << LengthBonus.new(match.count) if match.count > 3
     effect_block.effects << ChainBonus.new if match.any? { |b| b.bonus }
+    offsets = (0...match.length).to_a.sort_by { rand }
     match.each do |block|        
       index = self.index(block)
       if index != nil         
-        self[index].state = ExplodingState.new(self[index])
+        self[index].state = ExplodingState.new(self[index], offsets.shift, match.length)
       end
     end
   end

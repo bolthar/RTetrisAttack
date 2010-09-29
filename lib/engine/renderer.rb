@@ -151,6 +151,7 @@ class Renderer
   end
 
   def render_exploding(block, x, y, ticks)
+    return if block.state.is_exploded?
     if block.state.is_light?
       surface = light_tokens[block.type]
     else

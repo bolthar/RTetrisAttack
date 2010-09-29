@@ -19,7 +19,12 @@ class SoundPlayer
   end
 
   def play_sound(sound, channel)
-    Mixer.play_channel(channel, sound, 0) unless Mixer.play?(channel)
+    if channel.kind_of? Array
+      target_channel = channel.first { |ch| !Mixer.play?(ch) }
+      Mixer.play_channel(target_channel, sound, 0) if target_channel
+    else
+      Mixer.play_channel(channel, sound, 0) unless Mixer.play?(channel)
+    end
   end
 
   def play(playfield)
@@ -31,6 +36,7 @@ class SoundPlayer
           play_sound(@swap, 0)   if block.state.class == SwappingState && block.state.counter == 1
           play_sound(@bounce, 1) if block.state.class == BouncingState && block.state.counter == 0
           play_sound(@bonus, 2)  if block.effects.any? { |e| e.counter == 1 }
+          play_sound(@pop, [3,4,5,6])    if block.state.class == ExplodingState && block.state.exploding?
           over_threshold = true if y > 8
         end
       end
