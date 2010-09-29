@@ -6,6 +6,7 @@ class SwappingState < NormalState
 
   def initialize(block, verse)
     super(block)
+    block.bonus = false
     @verse = verse
     @counter = 0
   end
