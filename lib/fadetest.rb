@@ -18,14 +18,13 @@ black.fill_rect(0,0,black.w, black.h, [0,0,0,0])
 Surface.blit(black, 0, 0, 0, 0, screen, 0, 0)
 
 screen.flip
-alpha = 100
+alpha = 255
 while(true)
   Surface.blit(background, 0, 0, 0, 0, screen, 0, 0)
   black.fill_rect(0,0,black.w, black.h, [0,0,0,alpha])
   Surface.blit(black, 0, 0, 0, 0, screen, 0, 0)
   screen.flip
   sleep(0.02)
-  alpha -= 10
-  
+  alpha -= 10  
 end
 

@@ -17,10 +17,10 @@ class Renderer
   end
 
   def startup
-    background = ResourceLoader.load('background')
-    tree = ResourceLoader.load('tree')
-    Surface.blit(background, 0, 0, 0, 0, @screen, 0, 0)
-    Surface.blit(tree, 0, 0, 0, 0, @screen, 0, 0)
+    @background = ResourceLoader.load('background')
+    @tree = ResourceLoader.load('tree')
+#    Surface.blit(@background, 0, 0, 0, 0, @screen, 0, 0)
+#    Surface.blit(@tree, 0, 0, 0, 0, @screen, 0, 0)
     @screen.flip
   end
 
@@ -117,12 +117,16 @@ class Renderer
   def render(playfield)
     score_x = 190
     score_y = 57
+    if playfield.state.class == Startup
+      Surface.blit(@background, 0, 0, 0, 0, @screen, 0, 0)
+      Surface.blit(@tree, 0, 0, 0, 0, @screen, 0, 0)
+    end
     @typewriter ||= Typewriter.new(@screen.copy_rect(33, 33, 40, 13), @screen.copy_rect(score_x, score_y, 48, 13))
     Surface.blit(area, 0, 0, 0, 0, @screen, @start_x, @start_y)
     (0..5).each do |x|
       (0..11).each do |y|
         block = playfield[x,y]
-        unless block.class == NilBlock
+        unless block.class == NilBlock || (y == 0 && playfield.state.class == Startup)
         render_normal(block, x, y, playfield.ticks) if block.state.class == NormalState || block.state.class == FloatingState
         render_exploding(block, x, y, playfield.ticks) if block.state.class == ExplodingState
         render_bouncing(block, x, y, playfield.ticks) if block.state.class == BouncingState
@@ -140,12 +144,25 @@ class Renderer
       end
     end
     Surface.blit(playfield.cursor.sprite, 0 ,0, 0, 0, @screen, @start_x + (16 * playfield.cursor.pos_x) - 2, @end_y - (16 * playfield.cursor.pos_y) - 2 - playfield.ticks)
-    Surface.blit(@typewriter.get_time(playfield.time_elapsed), 0, 0, 0, 0, @screen, 33, 33)
-    @screen.update_rect(33, 33, 40, 13)
+    Surface.blit(@typewriter.get_time(playfield.time_elapsed), 0, 0, 0, 0, @screen, 33, 33)    
+    @screen.update_rect(33, 33, 40, 13) if playfield.state.class == Running || !@updated
     Surface.blit(@typewriter.get_score(playfield.score), 0, 0, 0, 0, @screen, score_x, score_y)
-    @screen.update_rect(score_x, score_y, 48, 13)
-    @screen.update_rect(@start_x, @start_y, @end_x - @start_x, @end_y - @start_y)
+    @screen.update_rect(score_x, score_y, 48, 13) if playfield.state.class == Running || !@updated
+    @screen.update_rect(@start_x, @start_y, @end_x - @start_x, @end_y - @start_y) if playfield.state.class == Running || !@updated
+    if playfield.state.class == Startup
+      @updated = true
+      darken(playfield.state.counter * 10 < 255 ? 255 - playfield.state.counter * 10 : 0)
+    end   
   end
+
+  def darken(alpha)    
+    black = @screen.display_format_alpha
+    black.fill_rect(0,0,black.w, black.h, [0,0,0,alpha])
+    Surface.blit(black, 0, 0, 0, 0, @screen, 0, 0)
+    @screen.flip
+  end
+
+
 
   def render_block(surface, x, y)
     Surface.blit(surface, 0, 0, 0, 0, @screen, x, y)

@@ -2,19 +2,26 @@
 
 class Playfield < Array
 
-  attr_reader :ticks
   attr_reader :cursor
 
   attr_accessor :scroll
+  attr_accessor :multiplier
 
   attr_reader :score
+
+  attr_accessor :state
+
 
   def add_score(value)
     @score += value * @multiplier
   end
 
   def time_elapsed
-    return Time.now - @time
+    return @state.time_elapsed
+  end
+
+  def ticks
+    return @state.ticks
   end
   
   def [](*args)
@@ -37,6 +44,7 @@ class Playfield < Array
   end
 
   def initialize(cursor)
+    @state = Startup.new(self)
     (0..5).each do |column|
       (0..3).each do |row|
         self[column, row] = get_non_matching_block(column, row)
@@ -45,7 +53,6 @@ class Playfield < Array
         self[column, row] = NilBlock.new
       end
     end    
-    @ticks = 0
     @counter = 0
     @cursor = cursor
     @multiplier = 1
@@ -66,32 +73,7 @@ class Playfield < Array
   end
 
   def tick
-    @counter += 1
-    if @counter == 16 || @scroll
-      @ticks += 1 unless self.any? { |b| b.state.class == ExplodingState }
-      @counter = 0
-    end
-    self.each do |block|
-      block.ticked = false
-    end
-    @multiplier = 1 unless active_bonus?
-    (0..11).to_a.each do |row|
-      (0..5).each do |column|
-        self[column, row].tick(self)
-      end
-    end
-    if @ticks == 16
-      (0..11).to_a.reverse.each do |row|
-        (0..5).each do |column|
-          self[column, row + 1] = self[column, row]
-        end
-      end
-      (0..5).each do |column|
-        self[column, 0] = Block.new
-      end
-      @cursor.pos_y += 1
-      @ticks = 0
-    end
+    @state.tick(self)
   end
 
   def swap(x, y)
