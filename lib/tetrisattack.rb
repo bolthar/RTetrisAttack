@@ -14,8 +14,6 @@ SDL.init(SDL::INIT_EVERYTHING)
 Mixer.open
 screen = Screen.open(256, 222, 0, HWSURFACE | DOUBLEBUF)
 
-theme = ResourceLoader.load_music('music')
-
 cursor = Cursor.new
 
 start_x = 88

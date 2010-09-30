@@ -13,7 +13,7 @@ class Renderer
     @bonus4  = ResourceLoader.load('bonus4')
     @bonus5  = ResourceLoader.load('bonus5')
     @bonusx2 = ResourceLoader.load('bonusx2')
-    @start_op = 0
+    @start_op = 0   
   end
 
   def startup
@@ -115,6 +115,7 @@ class Renderer
   end
 
   def render(playfield)
+    @typewriter ||= Typewriter.new(@screen.copy_rect(33, 33, 40, 13))
     Surface.blit(area, 0, 0, 0, 0, @screen, @start_x, @start_y)
     (0..5).each do |x|
       (0..11).each do |y|
@@ -137,6 +138,8 @@ class Renderer
       end
     end
     Surface.blit(playfield.cursor.sprite, 0 ,0, 0, 0, @screen, @start_x + (16 * playfield.cursor.pos_x) - 2, @end_y - (16 * playfield.cursor.pos_y) - 2 - playfield.ticks)
+    Surface.blit(@typewriter.get_time(playfield.time_elapsed), 0, 0, 0, 0, @screen, 33, 33)
+    @screen.update_rect(33, 33, 40, 13)
     @screen.update_rect(@start_x, @start_y, @end_x - @start_x, @end_y - @start_y)
   end
 

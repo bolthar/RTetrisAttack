@@ -6,6 +6,10 @@ class Playfield < Array
   attr_reader :cursor
 
   attr_accessor :scroll
+
+  def time_elapsed
+    return Time.now - @time
+  end
   
   def [](*args)
     if args.length == 2
@@ -39,6 +43,7 @@ class Playfield < Array
     @counter = 0
     @cursor = cursor
     @multiplier = 0
+    @time = Time.now
   end
 
   def get_non_matching_block(column, row)
