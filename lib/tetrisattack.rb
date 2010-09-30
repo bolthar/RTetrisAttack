@@ -24,13 +24,14 @@ end_y = 215
 renderer = Renderer.new(screen, cursor, [start_x, end_x, start_y, end_y])
 mixer = SoundPlayer.new
 
+SPEED_FACTOR = 0.01
 playfield = Playfield.new(cursor)
 
 Thread.new do
   begin
   renderer.startup
   while true
-    sleep(0.02)
+    sleep(SPEED_FACTOR)
     playfield.tick
     mixer.play(playfield)
     playfield.check_for_matches

@@ -2,7 +2,7 @@
 class BouncingState < NormalState
 
   attr_reader :counter
-  
+
   def initialize(block)
     super(block)
     @counter = 0
@@ -14,11 +14,10 @@ class BouncingState < NormalState
 
   def tick(playfield)
     @counter += 1
-    if @counter == 6
+    if @counter == 600 * SPEED_FACTOR
       block.state = NormalState.new(block)
       block.bonus = false
     end
-    super(playfield)
   end
   
 end

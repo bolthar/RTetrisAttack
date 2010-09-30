@@ -15,6 +15,10 @@ class FloatingState < NormalState
     end
   end
 
+  def can_swap?
+    return false
+  end
+  
   def matches?(other)
     return false
   end

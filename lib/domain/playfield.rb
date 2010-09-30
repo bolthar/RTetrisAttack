@@ -67,7 +67,7 @@ class Playfield < Array
 
   def tick
     @counter += 1
-    if @counter == 8 || @scroll
+    if @counter == 16 || @scroll
       @ticks += 1 unless self.any? { |b| b.state.class == ExplodingState }
       @counter = 0
     end
