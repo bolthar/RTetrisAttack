@@ -7,6 +7,12 @@ class Playfield < Array
 
   attr_accessor :scroll
 
+  attr_reader :score
+
+  def add_score(value)
+    @score += value * @multiplier
+  end
+
   def time_elapsed
     return Time.now - @time
   end
@@ -42,8 +48,9 @@ class Playfield < Array
     @ticks = 0
     @counter = 0
     @cursor = cursor
-    @multiplier = 0
+    @multiplier = 1
     @time = Time.now
+    @score = 0
   end
 
   def get_non_matching_block(column, row)
@@ -67,7 +74,7 @@ class Playfield < Array
     self.each do |block|
       block.ticked = false
     end
-    @multiplier = 0 unless active_bonus?
+    @multiplier = 1 unless active_bonus?
     (0..11).to_a.each do |row|
       (0..5).each do |column|
         self[column, row].tick(self)
@@ -109,8 +116,15 @@ class Playfield < Array
   def check_for_matches
     match = find_matches
     effect_block = get_effect_block(match)
-    effect_block.effects << LengthBonus.new(match.count) if match.count > 3
-    effect_block.effects << ChainBonus.new if match.any? { |b| b.bonus }
+    if match.count > 3
+      effect_block.effects << LengthBonus.new(match.count)
+      add_score(match.count)
+    end
+    if match.any? { |b| b.bonus }
+       effect_block.effects << ChainBonus.new
+       @multiplier += 1
+    end
+   
     offsets = (0...match.length).to_a.sort_by { rand }
     match.each do |block|        
       index = self.index(block)

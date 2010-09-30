@@ -25,4 +25,9 @@ class Character
     return @blue
   end
 
+  def red
+    @red = apply_color([72, 16, 16, 255], [248, 152, 248, 255]) unless @red
+    return @red
+  end
+
 end

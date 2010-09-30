@@ -115,7 +115,9 @@ class Renderer
   end
 
   def render(playfield)
-    @typewriter ||= Typewriter.new(@screen.copy_rect(33, 33, 40, 13))
+    score_x = 190
+    score_y = 57
+    @typewriter ||= Typewriter.new(@screen.copy_rect(33, 33, 40, 13), @screen.copy_rect(score_x, score_y, 48, 13))
     Surface.blit(area, 0, 0, 0, 0, @screen, @start_x, @start_y)
     (0..5).each do |x|
       (0..11).each do |y|
@@ -140,6 +142,8 @@ class Renderer
     Surface.blit(playfield.cursor.sprite, 0 ,0, 0, 0, @screen, @start_x + (16 * playfield.cursor.pos_x) - 2, @end_y - (16 * playfield.cursor.pos_y) - 2 - playfield.ticks)
     Surface.blit(@typewriter.get_time(playfield.time_elapsed), 0, 0, 0, 0, @screen, 33, 33)
     @screen.update_rect(33, 33, 40, 13)
+    Surface.blit(@typewriter.get_score(playfield.score), 0, 0, 0, 0, @screen, score_x, score_y)
+    @screen.update_rect(score_x, score_y, 48, 13)
     @screen.update_rect(@start_x, @start_y, @end_x - @start_x, @end_y - @start_y)
   end
 
