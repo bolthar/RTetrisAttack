@@ -1,4 +1,6 @@
 
+SPEED_FACTOR = 0.01
+
 require 'rubygems'
 require 'require_all'
 
@@ -11,8 +13,11 @@ include SDL
 exit if defined?(Ocra)
 
 SDL.init(SDL::INIT_EVERYTHING)
+
 Mixer.open
-screen = Screen.open(256, 222, 0, HWSURFACE | DOUBLEBUF)
+screen = Screen.open(256, 222, 0, HWSURFACE | DOUBLEBUF | ASYNCBLIT | FULLSCREEN )
+
+SDL::WM.set_caption("RTetris attack", "test")
 
 cursor = Cursor.new
 
@@ -24,7 +29,7 @@ end_y = 215
 renderer = Renderer.new(screen, cursor, [start_x, end_x, start_y, end_y])
 mixer = SoundPlayer.new
 
-SPEED_FACTOR = 0.01
+
 playfield = Playfield.new(cursor)
 
 Thread.new do

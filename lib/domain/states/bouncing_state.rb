@@ -9,12 +9,12 @@ class BouncingState < NormalState
   end
 
   def animation_frame
-    return @counter / 2
+    return @counter / 4
   end
 
   def tick(playfield)
     @counter += 1
-    if @counter == 600 * SPEED_FACTOR
+    if @counter == 12
       block.state = NormalState.new(block)
       block.bonus = false
     end

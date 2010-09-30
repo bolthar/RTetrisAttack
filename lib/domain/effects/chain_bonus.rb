@@ -9,7 +9,7 @@ class ChainBonus
   
   def tick(block)
     @counter += 1
-    if @counter == 60
+    if @counter == 120
       block.effects.delete(self)
     end
   end
