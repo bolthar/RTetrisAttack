@@ -17,7 +17,7 @@ class Startup
   
   def tick(playfield)
     @counter += 1
-    if @counter == 300
+    if @counter == 200
       playfield.state = Running.new(playfield)
     end
   end

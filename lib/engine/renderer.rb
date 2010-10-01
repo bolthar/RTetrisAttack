@@ -151,7 +151,7 @@ class Renderer
     @screen.update_rect(@start_x, @start_y, @end_x - @start_x, @end_y - @start_y) if playfield.state.class == Running || !@updated
     if playfield.state.class == Startup
       @updated = true
-      darken(playfield.state.counter * 10 < 255 ? 255 - playfield.state.counter * 10 : 0)
+      darken(playfield.state.counter * 20 < 255 ? 255 - playfield.state.counter * 20 : 0)
     end   
   end
 
