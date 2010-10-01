@@ -103,8 +103,8 @@ class Playfield < Array
       add_score(match.count)
     end
     if match.any? { |b| b.bonus }
-       effect_block.effects << ChainBonus.new
-       @multiplier += 1
+      @multiplier += 1
+      effect_block.effects << ChainBonus.new(@multiplier)
     end
    
     offsets = (0...match.length).to_a.sort_by { rand }

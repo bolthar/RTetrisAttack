@@ -10,9 +10,6 @@ class Renderer
     @cursor = cursor
     @bounce_animation = {}
     #Temp...
-    @bonus4  = ResourceLoader.load('bonus4')
-    @bonus5  = ResourceLoader.load('bonus5')
-    @bonusx2 = ResourceLoader.load('bonusx2')
     @start_op = 0   
   end
 
@@ -112,7 +109,7 @@ class Renderer
     return @combo if @combo
     @combo = []
     (4..12).each do |length|
-      @combo[length] = ResourceLoader.load("bonus/#{length}")
+      @combo[length] = ResourceLoader.load("/bonus/#{length}")
     end
     return @combo
   end
@@ -121,7 +118,7 @@ class Renderer
     return @chain if @chain
     @chain = []
     (2..5).each do |length|
-      @chain[length] = ResourceLoader.load("bonus/x#{length}")
+      @chain[length] = ResourceLoader.load("/bonus/x#{length}")
     end
     return @chain
   end
