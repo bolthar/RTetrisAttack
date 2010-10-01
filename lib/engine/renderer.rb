@@ -108,10 +108,27 @@ class Renderer
     return tokens
   end
 
+  def combo
+    return @combo if @combo
+    @combo = []
+    (4..12).each do |length|
+      @combo[length] = ResourceLoader.load("bonus/#{length}")
+    end
+    return @combo
+  end
+
+  def chain
+    return @chain if @chain
+    @chain = []
+    (2..5).each do |length|
+      @chain[length] = ResourceLoader.load("bonus/x#{length}")
+    end
+    return @chain
+  end
+
   def get_effect(effect)
-    return @bonus4 if effect.class == LengthBonus && effect.length == 4
-    return @bonus5 if effect.class == LengthBonus #add more...
-    return @bonusx2 if effect.class == ChainBonus
+    return combo[effect.length] if effect.class == LengthBonus
+    return chain[effect.multiplier] if effect.class == ChainBonus
   end
 
   def render(playfield)

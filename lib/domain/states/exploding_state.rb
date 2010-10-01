@@ -24,7 +24,7 @@ class ExplodingState < NormalState
   end
 
   def is_light?
-    return @counter > 80 || @counter % 4 == 0
+    return @counter > 80 || (@counter % 4 == 0 || (@counter - 1) % 4 == 0)
   end
 
   def is_exploded?
