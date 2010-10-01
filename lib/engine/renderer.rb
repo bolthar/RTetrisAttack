@@ -10,9 +10,6 @@ class Renderer
     @cursor = cursor
     @bounce_animation = {}
     #Temp...
-    @bonus4  = ResourceLoader.load('bonus4')
-    @bonus5  = ResourceLoader.load('bonus5')
-    @bonusx2 = ResourceLoader.load('bonusx2')
     @start_op = 0   
   end
 
@@ -32,11 +29,11 @@ class Renderer
 
   def tokens
     return @tokens if @tokens
-    green = ResourceLoader.load('0')
-    blue = ResourceLoader.load('1')
-    violet = ResourceLoader.load('2')
-    yellow = ResourceLoader.load('3')
-    red = ResourceLoader.load('4')
+    green = ResourceLoader.load('/blocks/0')
+    blue = ResourceLoader.load('/blocks/1')
+    violet = ResourceLoader.load('/blocks/2')
+    yellow = ResourceLoader.load('/blocks/3')
+    red = ResourceLoader.load('/blocks/4')
     @tokens = {0 => green, 1 => blue, 2 => violet, 3 => yellow, 4 => red}
     return @tokens
   end
@@ -95,7 +92,7 @@ class Renderer
 
   def bounce_animation(type)
     return @bounce_animation[type] if @bounce_animation[type]   
-    bounce = ResourceLoader.load("#{type}bounce")
+    bounce = ResourceLoader.load("/blocks/#{type}bounce")
     bb1 = bounce.copy_rect(0, 0, 16, 16)
     bb2 = bounce.copy_rect(16, 0, 16, 16)
     bb3 = bounce.copy_rect(32, 0, 16, 16)
@@ -108,10 +105,27 @@ class Renderer
     return tokens
   end
 
+  def combo
+    return @combo if @combo
+    @combo = []
+    (4..12).each do |length|
+      @combo[length] = ResourceLoader.load("/bonus/#{length}")
+    end
+    return @combo
+  end
+
+  def chain
+    return @chain if @chain
+    @chain = []
+    (2..5).each do |length|
+      @chain[length] = ResourceLoader.load("/bonus/x#{length}")
+    end
+    return @chain
+  end
+
   def get_effect(effect)
-    return @bonus4 if effect.class == LengthBonus && effect.length == 4
-    return @bonus5 if effect.class == LengthBonus #add more...
-    return @bonusx2 if effect.class == ChainBonus
+    return combo[effect.length] if effect.class == LengthBonus
+    return chain[effect.multiplier] if effect.class == ChainBonus
   end
 
   def render(playfield)

@@ -2,8 +2,10 @@
 class ChainBonus
 
   attr_reader :counter
+  attr_reader :multiplier
 
-  def initialize
+  def initialize(multiplier)
+    @multiplier = multiplier
     @counter = 0
   end
   
