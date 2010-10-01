@@ -15,7 +15,7 @@ exit if defined?(Ocra)
 SDL.init(SDL::INIT_EVERYTHING)
 
 Mixer.open
-screen = Screen.open(256, 222, 0, HWSURFACE | DOUBLEBUF | ASYNCBLIT | FULLSCREEN)
+screen = Screen.open(256, 222, 0, HWSURFACE | DOUBLEBUF | ASYNCBLIT)
 
 SDL::WM.set_caption("RTetris attack", "test")
 
