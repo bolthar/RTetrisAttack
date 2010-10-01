@@ -29,11 +29,11 @@ class Renderer
 
   def tokens
     return @tokens if @tokens
-    green = ResourceLoader.load('0')
-    blue = ResourceLoader.load('1')
-    violet = ResourceLoader.load('2')
-    yellow = ResourceLoader.load('3')
-    red = ResourceLoader.load('4')
+    green = ResourceLoader.load('/blocks/0')
+    blue = ResourceLoader.load('/blocks/1')
+    violet = ResourceLoader.load('/blocks/2')
+    yellow = ResourceLoader.load('/blocks/3')
+    red = ResourceLoader.load('/blocks/4')
     @tokens = {0 => green, 1 => blue, 2 => violet, 3 => yellow, 4 => red}
     return @tokens
   end
@@ -92,7 +92,7 @@ class Renderer
 
   def bounce_animation(type)
     return @bounce_animation[type] if @bounce_animation[type]   
-    bounce = ResourceLoader.load("#{type}bounce")
+    bounce = ResourceLoader.load("/blocks/#{type}bounce")
     bb1 = bounce.copy_rect(0, 0, 16, 16)
     bb2 = bounce.copy_rect(16, 0, 16, 16)
     bb3 = bounce.copy_rect(32, 0, 16, 16)
