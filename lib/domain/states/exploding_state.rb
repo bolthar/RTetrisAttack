@@ -11,7 +11,7 @@ class ExplodingState < NormalState
   def tick(playfield)
     @counter += 1
     playfield.add_score(1) if exploding?
-    if @counter == 100 + @match_count * 16
+    if @counter == 100 + @match_count * 8
       index = playfield.index(block)
       playfield[index] = NilBlock.new
       x_pos = index % 6
@@ -28,11 +28,11 @@ class ExplodingState < NormalState
   end
 
   def is_exploded?
-    return @counter > 100 + @offset * 16
+    return @counter > 100 + @offset * 8
   end
 
   def exploding?
-    return @counter == 100 + @offset * 16
+    return @counter == 100 + @offset * 8
   end
 
   def matches?(other)
