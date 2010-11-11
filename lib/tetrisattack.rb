@@ -50,7 +50,7 @@ Thread.new do
   begin
   renderer.startup  
   while true    
-    sleep(0.025)
+    sleep(0.02)
     renderer.render(playfield)
     mixer.play(playfield)
     playfield.check_for_matches
