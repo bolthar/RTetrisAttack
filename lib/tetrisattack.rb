@@ -32,15 +32,28 @@ mixer = SoundPlayer.new
 
 playfield = Playfield.new(cursor)
 
+Thread.new do 
+  begin
+  while true
+    sleep(0.025)
+    playfield.tick  
+  end
+  rescue Exception => ex
+    p "render"
+    p ex
+    p ex.backtrace
+  end  
+end
+
+
 Thread.new do
   begin
-  renderer.startup
-  while true
-    sleep(SPEED_FACTOR)
-    playfield.tick
+  renderer.startup  
+  while true    
+    sleep(0.025)
+    renderer.render(playfield)
     mixer.play(playfield)
     playfield.check_for_matches
-    renderer.render(playfield)
   end
   rescue Exception => ex
     p "render"
