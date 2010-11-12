@@ -1,1 +1,1 @@
-ocra --dll libvorbisfile-3.dll --dll libogg-0.dll --dll libvorbis-0.dll --dll libpng12-0.dll tetrisattack.rb data/**/*
+ocra tetrisattack.rb data/**/*

@@ -15,7 +15,7 @@ class Running
 
   def tick(playfield)
     @counter += 1
-    if @counter == 16 || playfield.scroll
+    if @counter == 32 || playfield.scroll
       @ticks += 1 unless playfield.any? { |b| b.state.class == ExplodingState }
       @counter = 0
     end

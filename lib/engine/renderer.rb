@@ -93,9 +93,9 @@ class Renderer
   def bounce_animation(type)
     return @bounce_animation[type] if @bounce_animation[type]   
     bounce = ResourceLoader.load("/blocks/#{type}bounce")
-    bb1 = bounce.copy_rect(0, 0, 16, 16)
-    bb2 = bounce.copy_rect(16, 0, 16, 16)
-    bb3 = bounce.copy_rect(32, 0, 16, 16)
+    bb1 = bounce.copy_rect(0, 0, 48, 48)
+    bb2 = bounce.copy_rect(48, 0, 48, 48)
+    bb3 = bounce.copy_rect(96, 0, 48, 48)
     @bounce_animation[type] = [bb1, bb2, bb3]
     return @bounce_animation[type]
   end
@@ -129,13 +129,13 @@ class Renderer
   end
 
   def render(playfield)
-    score_x = 190
-    score_y = 57
+    score_x = 190 * 3
+    score_y = 57 * 3
     if playfield.state.class == Startup
       Surface.blit(@background, 0, 0, 0, 0, @screen, 0, 0)
       Surface.blit(@tree, 0, 0, 0, 0, @screen, 0, 0)
     end
-    @typewriter ||= Typewriter.new(@screen.copy_rect(33, 33, 40, 13), @screen.copy_rect(score_x, score_y, 48, 13))
+    @typewriter ||= Typewriter.new(@screen.copy_rect(99, 99, 120, 39), @screen.copy_rect(score_x, score_y, 48 * 3, 39))
     Surface.blit(area, 0, 0, 0, 0, @screen, @start_x, @start_y)
     (0..5).each do |x|
       (0..11).each do |y|
@@ -157,11 +157,11 @@ class Renderer
         end
       end
     end
-    Surface.blit(playfield.cursor.sprite, 0 ,0, 0, 0, @screen, @start_x + (16 * playfield.cursor.pos_x) - 2, @end_y - (16 * playfield.cursor.pos_y) - 2 - playfield.ticks)
-    Surface.blit(@typewriter.get_time(playfield.time_elapsed), 0, 0, 0, 0, @screen, 33, 33)    
-    @screen.update_rect(33, 33, 40, 13) if playfield.state.class == Running || !@updated
+    Surface.blit(playfield.cursor.sprite, 0 ,0, 0, 0, @screen, @start_x + (48 * playfield.cursor.pos_x) - 6, @end_y - (48 * playfield.cursor.pos_y) - 6 - (playfield.ticks * 3))
+    Surface.blit(@typewriter.get_time(playfield.time_elapsed), 0, 0, 0, 0, @screen, 99, 99)    
+    @screen.update_rect(99, 99, 120, 39) if playfield.state.class == Running || !@updated
     Surface.blit(@typewriter.get_score(playfield.score), 0, 0, 0, 0, @screen, score_x, score_y)
-    @screen.update_rect(score_x, score_y, 48, 13) if playfield.state.class == Running || !@updated
+    @screen.update_rect(score_x, score_y, 144, 39) if playfield.state.class == Running || !@updated
     @screen.update_rect(@start_x, @start_y, @end_x - @start_x, @end_y - @start_y) if playfield.state.class == Running || !@updated
     if playfield.state.class == Startup
       @updated = true
@@ -184,8 +184,8 @@ class Renderer
 
   def render_normal(block, x, y, ticks)
     render_block(get_tokens(y)[block.type],
-                 @start_x + (x*16),
-                 @end_y - (y*16) - ticks)
+                 @start_x + (x*48),
+                 @end_y - (y*48) - ticks * 3)
   end
 
   def render_exploding(block, x, y, ticks)
@@ -196,28 +196,28 @@ class Renderer
       surface = get_tokens(y)[block.type]
     end
     render_block(surface,
-                 @start_x + (x*16),
-                 @end_y - (y*16) - ticks)
+                 @start_x + (x*48),
+                 @end_y - (y*48) - ticks * 3)
   end
 
   def render_swapping(block, x, y, ticks)
-    Surface.blit(get_tokens(y)[block.type],0,0,0,0 ,@screen,@start_x + (x*16) + ((block.state.verse * block.state.counter) * 4), @end_y - (y*16) - ticks)
+    Surface.blit(get_tokens(y)[block.type],0,0,0,0 ,@screen,@start_x + (x*48) + ((block.state.verse * block.state.counter) * 12), @end_y - (y*48) - ticks * 3)
   end
 
   def render_falling(block, x, y, ticks)
-    Surface.blit(get_tokens(y)[block.type],0,0,0,0 ,@screen,@start_x + (x*16), @end_y - (y*16) - ticks + (block.state.counter * 8))
+    Surface.blit(get_tokens(y)[block.type],0,0,0,0 ,@screen,@start_x + (x*48), @end_y - (y*48) - (ticks * 3) + (block.state.counter * 24))
   end
 
   def render_bouncing(block, x, y, ticks)
-    Surface.blit(bounce_animation(block.type)[block.state.animation_frame],0,0,0,0, @screen,@start_x + (x*16), @end_y - (y*16) - ticks)
+    Surface.blit(bounce_animation(block.type)[block.state.animation_frame],0,0,0,0, @screen,@start_x + (x*48), @end_y - (y*48) - (ticks * 3))
   end
 
   def render_effects(effects, x, y)
     offset = 0
     effects.each do |effect|
       surface = get_effect(effect)
-      Surface.blit(surface, 0, 0, 0, 0, @screen, @start_x + (x*16), @end_y - (y*16) - 10 - offset + (2*(8 - (Math.sqrt(effect.counter)))))
-      offset += 20
+      Surface.blit(surface, 0, 0, 0, 0, @screen, @start_x + (x*48), @end_y - (y*48) - 60 - offset + (6*(24 - (Math.sqrt(effect.counter * 3)))))
+      offset += 60
     end
   end
 

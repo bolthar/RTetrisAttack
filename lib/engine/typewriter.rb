@@ -1,8 +1,8 @@
 
 class Typewriter
 
-  LARGE_CHAR_WIDTH  = 8
-  LARGE_CHAR_HEIGHT = 13
+  LARGE_CHAR_WIDTH  = 24
+  LARGE_CHAR_HEIGHT = 39
 
   def initialize(time_area, score_area)
     @time_area  = time_area
@@ -11,7 +11,7 @@ class Typewriter
     @format = numbers_png.format
     @numbers = []
     (0..10).each do |number|
-      @numbers[number] = Character.new(numbers_png.copy_rect(number * LARGE_CHAR_WIDTH, 0, 8, 13))
+      @numbers[number] = Character.new(numbers_png.copy_rect(number * LARGE_CHAR_WIDTH, 0, 8 * 3, 13 * 3))
     end
   end
 
