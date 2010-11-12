@@ -1,5 +1,5 @@
 
-SPEED_FACTOR = 0.01
+SPEED_FACTOR = 0.02
 
 require 'rubygems'
 require 'require_all'
@@ -15,16 +15,16 @@ exit if defined?(Ocra)
 SDL.init(SDL::INIT_EVERYTHING)
 
 Mixer.open
-screen = Screen.open(256, 222, 0, HWSURFACE | DOUBLEBUF | ASYNCBLIT)
+screen = Screen.open(256 * 3, 222 * 3, 0, HWSURFACE | DOUBLEBUF | ASYNCBLIT)
 
 SDL::WM.set_caption("RTetris attack", "test")
 
 cursor = Cursor.new
 
-start_x = 88
-end_x = 184
-start_y = 23
-end_y = 215
+start_x = 88 * 3
+end_x = 184 * 3
+start_y = 23 * 3
+end_y = 215 * 3
 
 renderer = Renderer.new(screen, cursor, [start_x, end_x, start_y, end_y])
 mixer = SoundPlayer.new
@@ -32,10 +32,10 @@ mixer = SoundPlayer.new
 
 playfield = Playfield.new(cursor)
 
-Thread.new do 
-  begin
+Thread.new do
+q  begin
   while true
-    sleep(0.025)
+    sleep(0.005)
     playfield.tick  
   end
   rescue Exception => ex
@@ -45,12 +45,11 @@ Thread.new do
   end  
 end
 
-
 Thread.new do
   begin
   renderer.startup  
   while true    
-    sleep(0.025)
+    sleep(SPEED_FACTOR)
     renderer.render(playfield)
     mixer.play(playfield)
     playfield.check_for_matches
@@ -70,6 +69,7 @@ while true
     cursor.pos_x -= 1 if event.sym == SDL::Key::LEFT
     cursor.pos_y += 1 if event.sym == SDL::Key::UP
     cursor.pos_y -= 1 if event.sym == SDL::Key::DOWN
+    rising_factor -= 0.01 if event.sym == SDL::Key::W
     playfield.swap(cursor.pos_x, cursor.pos_y) if event.sym == SDL::Key::N
     playfield.scroll = true if event.sym == SDL::Key::M
     renderer.render(playfield)
