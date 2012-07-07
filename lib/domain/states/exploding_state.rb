@@ -1,6 +1,9 @@
 
 class ExplodingState < NormalState
 
+  EXPLOSION_DELAY = 60
+  EXPLOSION_OFFSET = 4
+  LIGHTNING_OFFSET = 10
   def initialize(block, offset, match_count)
     super(block)
     @offset = offset
@@ -11,7 +14,7 @@ class ExplodingState < NormalState
   def tick(playfield)
     @counter += 1
     playfield.add_score(1) if exploding?
-    if @counter == 100 + @match_count * 8
+    if @counter == EXPLOSION_DELAY + @match_count * EXPLOSION_OFFSET
       index = playfield.index(block)
       playfield[index] = NilBlock.new
       x_pos = index % 6
@@ -24,15 +27,15 @@ class ExplodingState < NormalState
   end
 
   def is_light?
-    return @counter > 80 || (@counter % 4 == 0 || (@counter - 1) % 4 == 0)
+    return @counter > EXPLOSION_DELAY - LIGHTNING_OFFSET || (@counter % 4 == 0 || (@counter - 1) % 4 == 0)
   end
 
   def is_exploded?
-    return @counter > 100 + @offset * 8
+    return @counter > EXPLOSION_DELAY + @offset * EXPLOSION_OFFSET
   end
 
   def exploding?
-    return @counter == 100 + @offset * 8
+    return @counter == EXPLOSION_DELAY + @offset * EXPLOSION_OFFSET
   end
 
   def matches?(other)

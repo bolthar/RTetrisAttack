@@ -176,8 +176,6 @@ class Renderer
     @screen.flip
   end
 
-
-
   def render_block(surface, x, y)
     Surface.blit(surface, 0, 0, 0, 0, @screen, x, y)
   end
